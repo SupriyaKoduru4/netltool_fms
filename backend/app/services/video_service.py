@@ -1,3 +1,7 @@
+from fastapi import HTTPException
+
+from app.models.blog_draft import Draft
+from app.services.AI.ai_service import generate_blog_with_ollama
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 from app.models.Video import Video
@@ -24,6 +28,19 @@ def get_videos(db:Session):
 # update video
 
 # get transcript draft
+def get_draft(video_id: int, db: Session):
+    video = db.query(Video).filter(Video.id == video_id).first()
+    if not video:
+        print("Video not found for ID:", video_id)
+        raise HTTPException(status_code=404, detail="Video not found")
+
+    draft = generate_blog_with_ollama(video_id, video.title, video.transcript, db)
+    if(draft):
+        return draft
+    else:
+        print("Draft generation failed for video ID:", video_id)
+        return None
+    
 
 # get video by id
 

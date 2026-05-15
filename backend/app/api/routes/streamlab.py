@@ -16,8 +16,9 @@ from sqlalchemy.orm import Session
 from app.models.Video import Video
 from app.db.database import get_db
 from app.api.routes.auth import get_current_user
-from app.services.video_service import save_video , get_videos
+from app.services.video_service import get_draft, save_video , get_videos
 from app.task.video_transcript_process import process_video_transcript
+from app.services.AI.ai_service import generate_blog_with_ollama
 
 router = APIRouter()
 
@@ -131,7 +132,7 @@ async def get_video_blog_draft(
     video_id: int,
     db: Session = Depends(get_db)
 ):
-    draft = db.query(Draft).filter(Draft.video_id == video_id).first()
+    draft = get_draft(video_id, db)
     if not draft:
-        raise HTTPException(status_code=404, detail="Blog draft not found")
+        raise HTTPException(status_code=404, detail="Draft not found")
     return {"draft": draft}
