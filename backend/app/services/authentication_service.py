@@ -1,10 +1,11 @@
 from app.utils import mail_config
 from datetime import timedelta , datetime
 from jose import jwt
+from jose.exceptions import JWTError, ExpiredSignatureError
 from fastapi import HTTPException
 from app.utils.auth_config import SECRET_KEY, ALGORITHM, INVITATION_URL
 
-from app.schemas.User import UserCreate
+from app.schemas.User import UserCreate, UserRegister
 from app.models.User import User
 from sqlalchemy.orm import Session
 from app.services.mail_service import send_mail
@@ -24,6 +25,18 @@ def create_access_token(data:dict , expire_timedelta:timedelta = None):
     encoded_jwt = jwt.encode(to_encode , SECRET_KEY , algorithm=ALGORITHM)
 
     return encoded_jwt
+
+def verify_access_token(token:str):
+    try:
+        payload = jwt.decode(token , SECRET_KEY , algorithms=[ALGORITHM])
+        user_id = payload.get("user_id")
+        if user_id is None:
+            raise HTTPException(status_code=401 , detail="Invalid token")
+        return user_id
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401 , detail="Token has expired")
+    except JWTError:
+        raise HTTPException(status_code=401 , detail="Invalid token")
 
 # create user and send mail
 async def create_user_for_login(user:UserCreate , db:Session):
@@ -66,7 +79,30 @@ async def create_user_for_login(user:UserCreate , db:Session):
 
 
 # register user 
+def register_user(data:UserRegister , invitation_token:str , db:Session):
+    try:
+        user_id = verify_access_token(invitation_token)
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=404 , detail="User not found")
+        if user.is_register:
+            raise HTTPException(status_code=400 , detail="User already registered")
+        
+        user.password = data.password
+        user.avatar_url = data.avatar_Url
+        user.company = data.company
+        user.first_name = data.first_name
+        user.last_name = data.last_name
+        user.phone = data.phone
+        user.is_register = True
 
+        db.commit()
+        db.refresh(user)
+
+        return user
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500 , detail=str(e))
 
 # update user 
 

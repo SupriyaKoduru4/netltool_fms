@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "postgresql://netltool_user:robotics123@localhost/netltoolfms"
+DATABASE_URL = "postgresql://postgres:robotics123@localhost/netltoolfms"
 
 engine = create_engine(DATABASE_URL)
 
