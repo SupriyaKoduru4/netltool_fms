@@ -376,7 +376,7 @@ function SignUp({
           relative
           z-10
           w-full
-          max-w-[890px]
+          max-w-[900px]
           bg-white
           rounded-2xl
           overflow-hidden
