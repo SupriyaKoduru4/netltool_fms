@@ -4,6 +4,9 @@ import LoginBar from "../components/Home/LoginBar"
 import Button from "../components/UI/Button"
 import CustomTable from "../components/UI/CustomTable"
 import OptionsContainer from "../components/UI/OptionsContainer"
+import { useGetBlogByIdQuery, useGetBlogsQuery } from '../services/api/blogSlice'
+import BlogsTableSkeleton from '../components/Loading/SkeletonTable'
+import SkeletonTable from '../components/Loading/SkeletonTable'
 
 const column = [
     {key: "title", label: "Title"},
@@ -28,9 +31,19 @@ const Blogs = ()=>{
 
     const navigate = useNavigate()
 
+    // service apis
+    const {data , isLoading , isError} = useGetBlogsQuery("blogs")
+    console.log("Blogs data: ", data, isLoading, isError)
+
      const handleCreateNewBlog = () => {
         navigate("/blog-editor");
       };
+
+      if(isLoading) {
+        return <OptionsContainer>
+            <SkeletonTable/>
+        </OptionsContainer>
+      }
 
     return <div>
         <OptionsContainer>
