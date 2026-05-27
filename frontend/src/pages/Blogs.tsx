@@ -50,8 +50,12 @@ const Blogs = ()=>{
             <div className="p-6" >
                 <div className="flex flex-row justify-between">
                     <div>
-                         <h1 className="text-3xl font-bold">Blogs</h1>
-                <p>Manage your blog posts here.</p>
+                       <h1 className="text-2xl font-bold text-gray-900 mb-1">
+              Blogs / Notes
+            </h1>
+            <p className="text-sm text-gray-500">
+              Record, edit, and manage your Blog posts.
+            </p>
                     </div>
                      
                      <div>

@@ -61,8 +61,12 @@ const Projects: React.FC = () => {
             <div className="p-6" >
                 <div className="flex flex-row justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold">Projects</h1>
-                        <p className="text-gray-600">Manage your projects here.</p>
+                         <h1 className="text-2xl font-bold text-gray-900 mb-1">
+              Project Management
+            </h1>
+            <p className="text-sm text-gray-500">
+              Record, edit, and manage your projects.
+            </p>
                     </div>
                     <div>
                         <Button text="Create New Project + " onClick={() => { setIsOpen(true) }} variant="primary" />

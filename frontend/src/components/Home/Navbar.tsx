@@ -49,9 +49,9 @@ const options: NavItem[] = [
 
   {
     id: 3,
-    title: "Videos",
+    title: "Studio",
     icon: Video,
-    path: "/videos",
+    path: "/studio",
   },
 
   // {
