@@ -5,12 +5,13 @@ import { CiSettings } from "react-icons/ci";
 
 const LoginBar: React.FC = () => {
   return (
-    <div className="px-6 py-3 flex flex-row items-center justify-between bg-white border-b border-gray-100">
+    <div className="px-6 py-3 flex flex-row items-center justify-between bg-[#E5E5EA] border-b border-gray-100">
 
       {/* Search */}
       <div className="w-80">
         <CustomInput
           type="search"
+          
           placeholder="Search anything..."
         />
       </div>

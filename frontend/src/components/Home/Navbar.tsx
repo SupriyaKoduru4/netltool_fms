@@ -95,12 +95,12 @@ const options: NavItem[] = [
   // },
 
 
-//   {
-//     id: 10,
-//     title: "Setting",
-//     icon: Setting,
-//     path: "/settings",
-  // },
+  {
+    id: 10,
+    title: "Setting",
+    icon: Setting,
+    path: "/settings",
+  },
 ];
 
 const Navbar = ({

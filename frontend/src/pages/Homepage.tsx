@@ -5,7 +5,7 @@ import OptionsContainer from "../components/UI/OptionsContainer";
 const Homepage = () => {
   return (
     <OptionsContainer>
-      <div className="p-8 flex flex-col gap-8">
+      <div className="p-8 flex flex-col bg-[#F2F2F7] w-full h-full gap-8">
 
         {/* Header */}
         <div className="flex flex-col gap-1 border-b border-gray-100 pb-8">

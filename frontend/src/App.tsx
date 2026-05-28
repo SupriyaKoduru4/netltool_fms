@@ -11,6 +11,7 @@ import Projects from "./pages/Projects";
 import BlogEditor from "./pages/BlogEditor";
 import Video from "./pages/Video";
 import ProjectUpdates from "./pages/ProjectUpdates";
+import Settings from "./pages/Settings";
 
 function App() {
 
@@ -57,6 +58,8 @@ function App() {
         <Route path="/blog-editor" element={<BlogEditor/>} />
 
         <Route path="/project-updates/:projectId" element={<ProjectUpdates />} />
+
+        <Route path="/settings" element={<Settings/>} />
       </Routes>
           
     </div>
