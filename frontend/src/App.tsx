@@ -58,7 +58,7 @@ function App() {
 
         <Route path="/project-updates/:projectId" element={<ProjectUpdates />} />
       </Routes>
-
+          
     </div>
 
   );

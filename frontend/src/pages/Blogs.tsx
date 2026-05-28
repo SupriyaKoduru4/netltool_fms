@@ -9,9 +9,11 @@ import BlogsTableSkeleton from '../components/Loading/SkeletonTable'
 import SkeletonTable from '../components/Loading/SkeletonTable'
 
 const column = [
+    {key:"id" , label:"id"},
     {key: "title", label: "Title"},
-    {key: "author", label: "Author"},
-    {key: "date", label: "Date"},
+    {key: "author_id", label: "Author"},
+    {key:"summary" , label:"Summary"},
+    {key: "date", label: "Date"}, 
     {key: "actions", label: "Actions"},
 ] 
 
@@ -32,8 +34,8 @@ const Blogs = ()=>{
     const navigate = useNavigate()
 
     // service apis
-    const {data , isLoading , isError} = useGetBlogsQuery("blogs")
-    console.log("Blogs data: ", data, isLoading, isError)
+    const {data , isLoading , isError , error} = useGetBlogsQuery("blogs")
+    console.log("Blogs data: ", data, isLoading, )
 
      const handleCreateNewBlog = () => {
         navigate("/blog-editor");
@@ -42,6 +44,15 @@ const Blogs = ()=>{
       if(isLoading) {
         return <OptionsContainer>
             <SkeletonTable/>
+        </OptionsContainer>
+      }
+
+      if(isError){
+        <OptionsContainer>
+            <div>
+                <h1>Something went wrong</h1>
+                <p></p>
+            </div>
         </OptionsContainer>
       }
 
@@ -65,7 +76,7 @@ const Blogs = ()=>{
                 </div>
               
                 <div>
-                    <CustomTable columns={column} data={blogData}/>
+                    <CustomTable columns={column} data={data.blogs}/>
                 </div>
             </div>
         </OptionsContainer>

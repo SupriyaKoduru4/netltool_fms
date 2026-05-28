@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from app.db.database import base
 import datetime
+from sqlalchemy.orm import relationship
 
 
 class User(base):
@@ -40,3 +41,5 @@ class User(base):
     invitation_token = Column(String, nullable=True)
 
     invitation_expiry = Column(DateTime, nullable=True)
+
+    blogs = relationship("Blog", back_populates="user")
