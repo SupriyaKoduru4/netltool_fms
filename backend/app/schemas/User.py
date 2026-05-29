@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class UserCreate(BaseModel):
     email: str
     first_name:str
-    role: str = "User"
+    role: int
 
 class UserRegister(BaseModel):
     password: str
@@ -13,5 +13,6 @@ class UserRegister(BaseModel):
     first_name:str 
     last_name:str
     phone:str
+    
     
 

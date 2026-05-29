@@ -5,12 +5,14 @@ from app.db.database import get_db
 from sqlalchemy.orm import Session
 from app.schemas.project_schema import ProjectCreate
 from app.schemas.updates_schema import CreateUpdate
+from app.middleware.permission_dependency import require_permission
+from app.constants.permissions import Permissions
 
 router = APIRouter()
 
 
 @router.post("/create")
-def create(project_data: ProjectCreate , current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+def create(project_data: ProjectCreate , current_user: str = Depends(require_permission(Permissions.PROJECT_CREATE)), db: Session = Depends(get_db)):
     try:
         # Call the create_project function from the service
         project = create_project(
@@ -33,7 +35,7 @@ def get_projects(query:str=None ,db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/update/{project_id}")
-def update(project_id: int, project_data: ProjectCreate, db: Session = Depends(get_db)):
+def update(project_id: int, project_data: ProjectCreate, current_user: str = Depends(require_permission(Permissions.PROJECT_UPDATE)), db: Session = Depends(get_db)):
     try:
         # Call the update_project function from the service
 
@@ -43,7 +45,7 @@ def update(project_id: int, project_data: ProjectCreate, db: Session = Depends(g
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/{project_id}/add-update")
-def add_update(project_id:int , update_data:CreateUpdate , db: Session = Depends(get_db)):
+def add_update(project_id:int , update_data:CreateUpdate , current_user: str = Depends(require_permission(Permissions.PROJECT_UPDATE)), db: Session = Depends(get_db)):
     try:
         # Call the add_updates_to_project function from the service
 
@@ -63,7 +65,7 @@ def get_all_updates_for_project(project_id:int , db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/{project_id}/update-update/{update_id}")
-def update_updates_to_project( update_id:int , update_data:CreateUpdate , db: Session = Depends(get_db)):
+def update_updates_to_project( update_id:int , update_data:CreateUpdate , current_user: str = Depends(require_permission(Permissions.PROJECT_UPDATE)), db: Session = Depends(get_db)):
     try:
         # Call the update_update function from the service
 
@@ -73,7 +75,7 @@ def update_updates_to_project( update_id:int , update_data:CreateUpdate , db: Se
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/{project_id}/delete-update/{update_id}")
-def delete_update_from_project(update_id:int , db: Session = Depends(get_db)):
+def delete_update_from_project(update_id:int , current_user: str = Depends(require_permission(Permissions.PROJECT_DELETE)), db: Session = Depends(get_db)):
     try:
         # Call the delete_update function from the service
 

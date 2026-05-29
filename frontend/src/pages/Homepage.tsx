@@ -1,95 +1,39 @@
-import Navbar, { NavItem, } from "../components/Home/Navbar";
-
-import Blogs from "../assets/Navbar/Blogs.svg";
-import Calender from "../assets/Navbar/Calender.svg";
-import Hardware from "../assets/Navbar/Hardware.svg";
-import Home from "../assets/Navbar/Home.svg";
-import Projects from "../assets/Navbar/Projects.svg";
-import Setting from "../assets/Navbar/Setting.svg";
-import Task from "../assets/Navbar/Task.svg";
-import Transcript from "../assets/Navbar/Transcript.svg";
-import VideoRecorder from "../assets/Navbar/Video-recorder.svg";
-import Video from "../assets/Navbar/Video.svg";
-
-const navItems: NavItem[] = [
-  {
-    id: 1,
-    title: "Dashboard",
-    icon: Home,
-    path: "/",
-  },
-
-  {
-    id: 2,
-    title: "Video Recorder",
-    icon: VideoRecorder,
-    path: "/video-recorder",
-  },
-
-  {
-    id: 3,
-    title: "Videos",
-    icon: Video,
-    path: "/videos",
-  },
-
-  {
-    id: 4,
-    title: "Transcripts",
-    icon: Transcript,
-    path: "/transcripts",
-  },
-
-  {
-    id: 5,
-    title: "Blogs / Notes",
-    icon: Blogs,
-    path: "/blogs",
-  },
-
-  {
-    id: 6,
-    title: "Hardware Components",
-    icon: Hardware,
-    path: "/hardwarecomponents"
-  },
-  {
-    id: 7,
-     title: "Projects",
-        icon: Projects,
-        path: "/projects",
-  },
-  
-  {
-    id: 8,
-    title: "Tasks",
-        icon: Task,
-        path: "/tasks",
-  },
-  {
-    id: 9,
-    title: "Calendar",
-        icon: Calender,
-        path: "/calendar",
-  },
-
-
-  {
-    id: 10,
-    title: "Setting",
-    icon: Setting,
-    path: "/settings",
-  },
-];
+import Navbar, { NavItem } from "../components/Home/Navbar";
+import CountCard from "../components/UI/CountCard";
+import OptionsContainer from "../components/UI/OptionsContainer";
 
 const Homepage = () => {
   return (
-    <div className="flex">
-      <Navbar
-        title="Netltool_FMS"
-        options={navItems}
-      />
-    </div>
+    <OptionsContainer>
+      <div className="p-8 flex flex-col bg-[#F2F2F7] w-full h-full gap-8">
+
+        {/* Header */}
+        <div className="flex flex-col gap-1 border-b border-gray-100 pb-8">
+          <p className="text-xs font-medium text-gray-400 tracking-widest uppercase">
+            Dashboard
+          </p>
+          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
+            Hey Udai!
+          </h1>
+          <p className="text-sm text-gray-400">
+            Welcome to the Founder Management System
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="flex flex-col gap-3">
+          <p className="text-xs font-medium text-gray-400 tracking-wide uppercase">
+            Overview
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <CountCard title="Total Blogs" count={5} />
+            <CountCard title="Total Project Updates"    count={3} />
+            <CountCard title="Total Videos"  count={10} />
+          </div>
+        </div>
+
+      </div>
+    </OptionsContainer>
   );
 };
 

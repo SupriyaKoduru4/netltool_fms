@@ -7,6 +7,8 @@ from app.api.routes.auth import get_current_user
 from app.services.AI.ai_service import generate_blog_with_ollama
 from app.schemas.blog_schema import BlogCreateRequest
 from app.services.blog_service import get_all_blogs , delete_blog
+from app.middleware.permission_dependency import require_permission
+from app.constants.permissions import Permissions
 
 router = APIRouter()
 
@@ -21,7 +23,7 @@ async def get_blogs(db: Session = Depends(get_db)):
 @router.post("/create")
 async def create(
     request: BlogCreateRequest,
-    current_user: str = Depends(get_current_user),
+    current_user: str = Depends(require_permission(Permissions.BLOG_CREATE)),
     db: Session = Depends(get_db)
 ):
     try:

@@ -1,7 +1,7 @@
 import React from "react";
 
 interface CustomInputProps {
-  label: string;
+  label?: string;
   name?: string;
   type?: string;
   placeholder?: string;
@@ -24,7 +24,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
   return (
 
-    <div className="w-full flex flex-col gap-1">
+    <div className="w-full flex flex-col gap-1 mt-2">
 
       <label className="text-sm font-medium text-gray-700">
         {label}
@@ -49,7 +49,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className="  w-full px-3 py-2 outline-none text-sm bg-white selection:bg-transparent selection:text-black"/>
+          className="  w-full px-3 py-3 outline-none text-sm bg-white selection:bg-transparent selection:text-black"/>
 
       </div>
     </div>

@@ -1,8 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+import os
 
-DATABASE_URL = "postgresql://postgres:robotics123@localhost/netltoolfms"
+load_dotenv()  # Load environment variables from .env file
+
+DATABASE_URL = os.getenv("DATABASE_URL") or "postgresql://netltool_user:robotics123@localhost:5432/netltoolfms"
 
 engine = create_engine(DATABASE_URL)
 

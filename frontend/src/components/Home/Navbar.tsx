@@ -1,4 +1,24 @@
 import { NavLink } from "react-router-dom";
+// @ts-ignore
+import Blogs from "../../assets/Navbar/Blogs.svg";
+// @ts-ignore
+import Calender from "../../assets/Navbar/Calender.svg";
+// @ts-ignore
+import Hardware from "../../assets/Navbar/Hardware.svg";
+// @ts-ignore
+import Home from "../../assets/Navbar/Home.svg";
+// @ts-ignore
+import Projects from "../../assets/Navbar/Projects.svg";
+// @ts-ignore
+import Setting from "../../assets/Navbar/Setting.svg";
+// @ts-ignore
+import Task from "../../assets/Navbar/Task.svg";
+// @ts-ignore
+import Transcript from "../../assets/Navbar/Transcript.svg";
+// @ts-ignore
+import VideoRecorder from "../../assets/Navbar/Video-recorder.svg";
+// @ts-ignore
+import Video from "../../assets/Navbar/Video.svg";
 
 export interface NavItem {
   id: number;
@@ -9,17 +29,86 @@ export interface NavItem {
 }
 
 interface NavbarProps {
-  options: NavItem[];
   title: string;
 }
 
+const options: NavItem[] = [
+  {
+    id: 1,
+    title: "Dashboard",
+    icon: Home,
+    path: "/",
+  },
+
+  // {
+  //   id: 2,
+  //   title: "Video Recorder",
+  //   icon: VideoRecorder,
+  //   path: "/video-recorder",
+  // },
+
+  {
+    id: 3,
+    title: "Studio",
+    icon: Video,
+    path: "/studio",
+  },
+
+  // {
+  //   id: 4,
+  //   title: "Transcripts",
+  //   icon: Transcript,
+  //   path: "/transcripts",
+  // },
+
+  {
+    id: 5,
+    title: "Blogs / Notes",
+    icon: Blogs,
+    path: "/blogs",
+  },
+
+  // {
+  //   id: 6,
+  //   title: "Hardware Components",
+  //   icon: Hardware,
+  //   path: "/hardwarecomponents"
+  // },
+  {
+    id: 7,
+     title: "Projects",
+        icon: Projects,
+        path: "/projects",
+  },
+  
+  // {
+  //   id: 8,
+  //   title: "Tasks",
+  //       icon: Task,
+  //       path: "/tasks",
+  // },
+  // {
+  //   id: 9,
+  //   title: "Calendar",
+  //       icon: Calender,
+  //       path: "/calendar",
+  // },
+
+
+  {
+    id: 10,
+    title: "Setting",
+    icon: Setting,
+    path: "/settings",
+  },
+];
+
 const Navbar = ({
-  options,
   title,
 }: NavbarProps) => {
   return (
     <aside
-      className=" fixed top-0 left-0 z-50 h-screen  w-[270px]  bg-[#0B0B0B] text-white overflow-y-auto " >
+      className="top-0 left-0 z-50 w-full h-screen  bg-[#0B0B0B] text-white overflow-y-auto " >
        
       <div className="p-5">
         <div className="flex items-center gap-3">

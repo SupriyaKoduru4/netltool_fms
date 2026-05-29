@@ -1,7 +1,11 @@
+from ast import expr
+
 from app.utils import mail_config
 from datetime import timedelta , datetime
 from jose import jwt
 from jose.exceptions import JWTError, ExpiredSignatureError
+from app.schemas.user_schema import login_schema
+from app.utils.security import hash_password, verify_password
 from fastapi import HTTPException
 from app.utils.auth_config import SECRET_KEY, ALGORITHM, INVITATION_URL
 
@@ -32,63 +36,81 @@ def verify_access_token(token:str):
         user_id = payload.get("user_id")
         if user_id is None:
             raise HTTPException(status_code=401 , detail="Invalid token")
-        return user_id
+        return payload
     except ExpiredSignatureError:
         raise HTTPException(status_code=401 , detail="Token has expired")
     except JWTError:
         raise HTTPException(status_code=401 , detail="Invalid token")
 
-# create user and send mail
-async def create_user_for_login(user:UserCreate , db:Session):
-    try:
+async def create_user_for_login(user: UserCreate, db: Session):
 
-        
-        db_user = db.query(User).filter(User.email == user.email).first()
-        if db_user:
-            raise HTTPException(status_code=400 , detail="User already exists")
-        db_user = User(
-            email=user.email,
-            first_name=user.first_name,
-            role=user.role
-        )
+    db_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
 
-        invitation_token = create_access_token({"user_id" : db_user.id})
-        db_user.invitation_token = invitation_token
-        db_user.invitation_expiry = datetime.utcnow() + timedelta(hours=24)
+    if db_user:
+        raise HTTPException(400, "User already exists")
 
-        await send_mail(mail_config=mail_config , email_data=EmailRequest(
+    db_user = User(
+        email=user.email,
+        first_name=user.first_name,
+        role=user.role
+    )
+
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+
+    # NOW id exists
+    invitation_token = create_access_token(
+        {"user_id": db_user.id , "role" : db_user.role} , expire_timedelta=timedelta(hours=24)
+    )
+
+    db_user.invitation_token = invitation_token
+    db_user.invitation_expiry = datetime.utcnow() + timedelta(hours=24)
+
+    db.commit()
+
+    await send_mail(
+        mail_config=mail_config,
+        email_data=EmailRequest(
             to=[user.email],
             subject="Invitation Mail",
-            body=f"You are invited to join Netltool FMS. Click on the link to register: {INVITATION_URL}{invitation_token}"
-        ))
+            body=f"{INVITATION_URL}{invitation_token}"
+        )
+    )
 
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-
-        # send invitation mail for user 
-
-       
-        return db_user
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500 , detail=str(e))
+    return db_user
     
 
 # login user 
+def login_user(data:login_schema , db:Session):
+    try:
+        user = db.query(User).filter(User.email == data.email).first()
+        if not user:
+            raise HTTPException(status_code=404 , detail="User not found")
+        verify = verify_password(data.password , user.password)
+        if not verify:
+            raise HTTPException(status_code=401 , detail="Invalid credentials")
+        access_token = create_access_token({"user_id" : user.id , "role" : user.role})
+        return {"access_token" : access_token , "token_type" : "bearer"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500 , detail=str(e))
 
 
 # register user 
 def register_user(data:UserRegister , invitation_token:str , db:Session):
     try:
-        user_id = verify_access_token(invitation_token)
-        user = db.query(User).filter(User.id == user_id).first()
+        user= verify_access_token(invitation_token)
+        user = db.query(User).filter(User.id == user["user_id"]).first()
         if not user:
             raise HTTPException(status_code=404 , detail="User not found")
         if user.is_register:
             raise HTTPException(status_code=400 , detail="User already registered")
         
-        user.password = data.password
+        user.password = hash_password(data.password)
         user.avatar_url = data.avatar_Url
         user.company = data.company
         user.first_name = data.first_name
@@ -127,3 +149,30 @@ def delete_user(db:Session , user_id:int):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500 , detail=str(e))
+
+# check token expr and expiry for invitation link
+def check_invitation_token(token:str):
+    try:
+        user = verify_access_token(token)
+        return user["user_id"]
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500 , detail=str(e))
+    
+# get user profile 
+def get_user_profile(token:str , db:Session):
+    try:
+        user = verify_access_token(token)
+        user_id = user["user_id"]
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=404 , detail="User not found")
+        return user
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500 , detail=str(e))
+    
+
+

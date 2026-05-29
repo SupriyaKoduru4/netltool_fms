@@ -10,7 +10,7 @@ from app.models.Updates import Updates
 
 def create_project(
     project_data: ProjectCreate,
-    current_user=Depends(get_current_user),
+    current_user=Depends(),
     db: Session = Depends(get_db)
 ):
     try:
