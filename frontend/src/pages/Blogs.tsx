@@ -59,24 +59,24 @@ const Blogs = ()=>{
     return <div>
         <OptionsContainer>
             <div className="p-6" >
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-row justify-between mb-4">
                     <div>
                        <h1 className="text-2xl font-bold text-gray-900 mb-1">
-              Blogs / Notes
-            </h1>
-            <p className="text-sm text-gray-500">
-              Record, edit, and manage your Blog posts.
-            </p>
+                          Blogs / Notes
+                       </h1>
+                        <p className="text-sm text-gray-500">
+                         Record, edit, and manage your Blog posts.
+                        </p>
                     </div>
                      
-                     <div>
-                        <Button text="Create New Blog + " onClick={handleCreateNewBlog} variant="primary"/>
+                     <div >
+                        <Button text=" + Create New Blog  " onClick={handleCreateNewBlog} variant="primary"/>
                      </div>
 
                 </div>
               
                 <div>
-                    <CustomTable columns={column} data={data.blogs}/>
+                    <CustomTable columns={column}  data={data?.blogs || []}/>
                 </div>
             </div>
         </OptionsContainer>

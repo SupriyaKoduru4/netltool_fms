@@ -4,10 +4,18 @@ import IconButton from "../components/UI/IconButton";
 import { RiResetLeftFill } from "react-icons/ri";
 import Editor from "../components/Blog/Editor";
 import CustomInput from "../components/Login/CustomInput";
+import {useNavigate} from "react-router-dom";
+import Backbutton from "../assets/Backbutton.svg"
+
 
 const BlogEditor = () => {
+  const navigate = useNavigate();
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  const handleBackToBlogs = () => {
+    navigate("/blogs");
+  }
 
   const handleSaveDraft = () => {
     setIsSaving(true);
@@ -22,7 +30,19 @@ const BlogEditor = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen ">
+     <div className="bg-white pl-4 pt-2">
+        <button
+        onClick = {handleBackToBlogs}
+        className=" flex items-center gap-2 text-xl font-medium text-gray-900 hover:text-black ml-4 mt-3 transition-colors" >
+          <img
+          src = {Backbutton} alt = "Back" className="w-4 h-4" />
+          <span className="text-m font-medium text-gary-700">
+            Back to Blogs
+          </span>
+
+        </button>
+      </div>
       <div
         className="px-10 py-6 flex flex-row justify-between items-center"
         style={{
@@ -31,6 +51,7 @@ const BlogEditor = () => {
           fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
         }}
       >
+        
         {/* Left: Title + timestamp */}
         <div className="flex flex-col gap-1">
           <h1
