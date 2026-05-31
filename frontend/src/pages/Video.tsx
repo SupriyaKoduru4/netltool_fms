@@ -48,9 +48,9 @@ function Video() {
         {/* Video Library Section */}
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-xs tracking-[0.15em] uppercase font-semibold text-gray-400">
+            {/* <span className="text-xs tracking-[0.15em] uppercase font-semibold text-gray-400">
               Library
-            </span>
+            </span> */}
             <div className="flex-1 h-px bg-gray-100" />
           </div>
 
