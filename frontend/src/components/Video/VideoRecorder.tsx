@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CiEdit } from "react-icons/ci";
 import Button from '../UI/Button';
 import IconButton from '../UI/IconButton';
@@ -7,6 +8,7 @@ import CustomInput from '../Login/CustomInput';
 type Phase = 'idle' | 'camera' | 'countdown' | 'recording' | 'playback';
 
 function VideoRecorder() {
+  const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -17,6 +19,7 @@ function VideoRecorder() {
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
   const [countKey, setCountKey] = useState(0);
+  const [videoTitle, setVideoTitle] = useState('Robotic version 1');
 
   const startCamera = async () => {
     try {
@@ -89,12 +92,52 @@ function VideoRecorder() {
   const formatTime = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
+  const handleSaveVideo = () => {
+    const saved = localStorage.getItem("fms_videos");
+    let list = [];
+    if (saved) {
+      try {
+        list = JSON.parse(saved);
+      } catch (e) {
+        list = [];
+      }
+    }
+    const newVideo = {
+      id: "v_" + Date.now(),
+      title: videoTitle || "Recorded Video",
+      duration: formatTime(recordingTime) === "00:00" ? "00:15" : formatTime(recordingTime),
+      date: new Date().toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }),
+      size: "8.5 MB",
+      format: "WEBM • 720p",
+      url: videoURL || "https://www.w3schools.com/html/mov_bbb.mp4",
+      thumbnailUrl: "/video_thumbnail.png",
+      transcript: "This is the transcript of the recorded video titled: " + videoTitle + ". In this video, we review key strategic items, updates, and progress for the Founder Management System.",
+      blogDraft: "<h1>" + videoTitle + "</h1><p>This blog post was automatically compiled from our video recording. We covered recent updates, progress tracking, and key highlights.</p><h2>Key Highlights</h2><ul><li>Discussed robotic system goals</li><li>Reviewed timeline and core requirements</li></ul>",
+      description: "Recorded video explaining updates for " + videoTitle + "."
+    };
+    list.unshift(newVideo);
+    localStorage.setItem("fms_videos", JSON.stringify(list));
+    navigate("/videos");
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center px-5 py-10 font-mono text-black">
 
      
 
-        <CustomInput label='Title for video' placeholder='Robotic version 1' />
+        <CustomInput
+          label='Title for video'
+          placeholder='Robotic version 1'
+          value={videoTitle}
+          onChange={(e) => setVideoTitle(e.target.value)}
+        />
       {/* Video Container */}
       <div className="w-full max-w-2xl aspect-video relative bg-[#111] border border-neutral-800 rounded overflow-hidden mb-6 mt-12">
 
@@ -174,15 +217,14 @@ function VideoRecorder() {
         )}
 
         {phase === 'playback' && (
-            <div className="flex gap-5">
-          <Button variant="primary" size="md" text='Retake' onClick={retake}/>
-          <Button variant="outlineDark" text="Generate blog post" onClick={() => alert('This will generate a blog post from the video using AI.')} />
-          <a href={videoURL!} download="recording.webm">
-            <Button variant="outlineDark" size="md" text='Download'/>
-          </a>
-          <IconButton  icon={<CiEdit size={20} color='black' />} onClick={() => alert('this will allow us to edit the video')} />
+          <div className="flex gap-4 flex-wrap justify-center">
+            <Button variant="primary" size="md" text='Retake' onClick={retake}/>
+            <Button variant="primary" size="md" text='Save to Library' onClick={handleSaveVideo}/>
+            <a href={videoURL!} download="recording.webm">
+              <Button variant="outlineDark" size="md" text='Download'/>
+            </a>
+            <IconButton icon={<CiEdit size={20} color='black' />} onClick={() => alert('this will allow us to edit the video')} />
           </div>
-
         )}
       </div>
 

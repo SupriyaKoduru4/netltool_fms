@@ -4,12 +4,18 @@ import IconButton from "../components/UI/IconButton";
 import { RiResetLeftFill } from "react-icons/ri";
 import Editor from "../components/Blog/Editor";
 import CustomInput from "../components/Login/CustomInput";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useLocation} from "react-router-dom";
 import Backbutton from "../assets/Backbutton.svg"
 
 
 const BlogEditor = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const passedTitle = location.state?.title || "";
+  const passedContent = location.state?.content || "";
+
+  const [title, setTitle] = useState(passedTitle);
+  const [content, setContent] = useState(passedContent);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -184,8 +190,13 @@ const BlogEditor = () => {
 
         {/* edit will be here...  */}
         <div className="px-10 py-6 flex flex-col flex-grow" style={{background:"#ffffff"}}>
-        <CustomInput label="Blog Title" placeholder="Enter your blog title here..." />
-      <Editor/>
+        <CustomInput
+          label="Blog Title"
+          placeholder="Enter your blog title here..."
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <Editor value={content} onChange={setContent} />
         </div>
     </div>
   );

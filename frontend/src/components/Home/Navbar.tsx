@@ -39,65 +39,63 @@ const options: NavItem[] = [
     icon: Home,
     path: "/",
   },
-
-  // {
-  //   id: 2,
-  //   title: "Video Recorder",
-  //   icon: VideoRecorder,
-  //   path: "/video-recorder",
-  // },
-
+  {
+    id: 2,
+    title: "Video Recorder",
+    icon: VideoRecorder,
+    path: "/video-recorder",
+  },
   {
     id: 3,
-    title: "Studio",
+    title: "Videos",
     icon: Video,
-    path: "/studio",
+    path: "/videos",
   },
-
-  // {
-  //   id: 4,
-  //   title: "Transcripts",
-  //   icon: Transcript,
-  //   path: "/transcripts",
-  // },
-
+  {
+    id: 4,
+    title: "Transcripts",
+    icon: Transcript,
+    path: "/transcripts",
+  },
   {
     id: 5,
     title: "Blogs / Notes",
     icon: Blogs,
     path: "/blogs",
   },
-
-  // {
-  //   id: 6,
-  //   title: "Hardware Components",
-  //   icon: Hardware,
-  //   path: "/hardwarecomponents"
-  // },
+  {
+    id: 6,
+    title: "Hardware Components",
+    icon: Hardware,
+    path: "/hardwarecomponents",
+  },
+  {
+    id: 11,
+    title: "MANAGEMENT",
+    icon: "",
+    type: "heading",
+  },
   {
     id: 7,
-     title: "Projects",
-        icon: Projects,
-        path: "/projects",
+    title: "Projects",
+    icon: Projects,
+    path: "/projects",
   },
-  
-  // {
-  //   id: 8,
-  //   title: "Tasks",
-  //       icon: Task,
-  //       path: "/tasks",
-  // },
-  // {
-  //   id: 9,
-  //   title: "Calendar",
-  //       icon: Calender,
-  //       path: "/calendar",
-  // },
-
-
+  {
+    id: 8,
+    title: "Tasks",
+    icon: Task,
+    path: "/tasks",
+  },
+  {
+    id: 9,
+    title: "Calendar",
+    icon: Calender,
+    path: "/calendar",
+  },
   {
     id: 10,
-    title: "Setting",
+    title: "Settings",
     icon: Setting,
     path: "/settings",
   },
