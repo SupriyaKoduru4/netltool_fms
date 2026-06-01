@@ -5,7 +5,7 @@ const API_BASE_URL = (import.meta as any).env.VITE_API_BASE_URL || 'http://local
 export const usersApi = createApi({
     reducerPath: "userApi",
     baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
-    tagTypes: ["Users", "UserDetail"],
+     tagTypes: ["Users", "UserDetail", "Roles", "Permissions", "RolePermissions"],
     endpoints: (builder) => ({
 
         getUsers: builder.query({
@@ -28,18 +28,37 @@ export const usersApi = createApi({
         }),
 
         //role and permissions
-        getRoles: builder.query({
+           getRoles: builder.query({
             query: () => '/role-permission/roles',
+            providesTags: [{ type: "Roles", id: "LIST" }],
         }),
-        getPermissions:builder.query({
-            query:()=>'/role-permission/permissions'
+
+        getPermissions: builder.query({
+            query: () => '/role-permission/permissions',
+            providesTags: [{ type: "Permissions", id: "LIST" }],
         }),
-        createRoles:builder.mutation({
-            query:(body)=>({
-                url:"/role-permission/create-role",
-                method:"POST",
+
+        createRoles: builder.mutation({
+            query: (body) => ({
+                url: "/role-permission/create-role",
+                method: "POST",
                 body
-            })
+            }),
+            invalidatesTags: [{ type: "Roles", id: "LIST" }],
+        }),
+
+        getRolesPermissions: builder.query({
+            query: () => "/role-permission/role-permissions",
+            providesTags: [{ type: "RolePermissions", id: "LIST" }],
+        }),
+
+        updateRolePermissions: builder.mutation({
+            query: (body) => ({
+                url: "/role-permission/assign-permission-to-role",
+                method: "POST",
+                body
+            }),
+            invalidatesTags: [{ type: "RolePermissions", id: "LIST" }],
         }),
 
 
@@ -97,5 +116,7 @@ export const {
     useDisbaleUserMutation,
     useDeleteUserMutation,
     useGetPermissionsQuery , 
-    useCreateRolesMutation
+    useCreateRolesMutation , 
+    useGetRolesPermissionsQuery , 
+    useUpdateRolePermissionsMutation
 } = usersApi;
