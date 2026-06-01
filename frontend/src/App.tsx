@@ -17,6 +17,7 @@ import ProjectUpdates from "./pages/ProjectUpdates";
 import Settings from "./pages/Settings";
 import ManageUsers from "./pages/ManageUsers";
 import ManageRoles from "./pages/ManageRoles";
+import BlogDetails from "./pages/BlogDetails";
 
 function App() {
 
@@ -74,6 +75,7 @@ function App() {
         path="/blogs"
         element={<Blogs/>}
         />
+
         <Route 
         path="/projects"
         element={<Projects/>}
@@ -91,6 +93,8 @@ function App() {
         <Route path="/hardwarecomponents" element={<ComingSoon title="Hardware Components" />} />
         <Route path="/tasks" element={<ComingSoon title="Tasks" />} />
         <Route path="/calendar" element={<ComingSoon title="Calendar" />} />
+        <Route path="/blog/:id" element={<BlogDetails/>} />
+        <Route path="/notifications" element={<ComingSoon title="Notifications" />} />
       </Routes>
           
     </div>

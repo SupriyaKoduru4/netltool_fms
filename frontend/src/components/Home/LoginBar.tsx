@@ -2,8 +2,10 @@ import CustomInput from "../Login/CustomInput"
 import IconButton from "../UI/IconButton"
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { CiSettings } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
 
 const LoginBar: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="px-6 py-3 flex flex-row items-center justify-between bg-[#E5E5EA] border-b border-gray-100">
 
@@ -23,7 +25,7 @@ const LoginBar: React.FC = () => {
         <div className="relative">
           <IconButton
             icon={<IoIosNotificationsOutline size={20} />}
-            onClick={() => {}}
+               onClick={() => navigate("/notifications")}
           />
           {/* Badge */}
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-gray-800 rounded-full ring-2 ring-white" />

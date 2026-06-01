@@ -1,6 +1,7 @@
 import React from "react";
 import OptionsContainer from "../components/UI/OptionsContainer";
 
+
 interface ComingSoonProps {
   title: string;
 }
