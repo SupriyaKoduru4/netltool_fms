@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 
 import CustomInput from "../../components/Login/CustomInput";
-import officeBg from "../../assets/Login/backgroundimage.png";
+// @ts-ignore - image import may not have type declarations in this project
+import officeBg from "../../assets/Login/backgroundimage.png"
+// @ts-ignore - image import may not have type declarations in this project
 import SigninImage from "../../assets/Login/signin.png";
+// @ts-ignore - image import may not have type declarations in this project
 import mailIcon from "../../assets/Login/mail.svg";
-import lockIcon from "../../assets/Login/password.svg";
+// @ts-ignore - image import may not have type declarations in this project
 import Eye from "../../assets/Login/eye.svg";
+// @ts-ignore - image import may not have type declarations in this project
 import Eyeclose from "../../assets/Login/Eyeclose.svg";
+// @ts-ignore - image import may not have type declarations in this project
+import lockIcon from "../../assets/Login/password.svg";
+import { useAppData } from "../../context/AppDate";
+
+import Button from "../../components/UI/Button";
 
 type Props = {
   setShowRegister: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,16 +26,24 @@ function SignIn({ setShowRegister, setIsLoggedIn }: Props) {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
+  const {login , authLoading , isError , error} = useAppData();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleLogin = () => {
+    try {
+
     if (formData.email && formData.password) {
-      setIsLoggedIn(true);
+      login({ email: formData.email, password: formData.password });
     } else {
       alert("Please fill all fields");
     }
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("An error occurred during login. Please try again.");
+  }
   };
 
   return (
@@ -146,12 +163,7 @@ function SignIn({ setShowRegister, setIsLoggedIn }: Props) {
           </div>
 
           {/* Login button — same black, polished */}
-          <button
-            onClick={handleLogin}
-            className="w-full bg-black text-white py-3 rounded-xl font-semibold text-sm tracking-wide hover:bg-gray-800 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-black/20"
-          >
-            Login
-          </button>
+         <Button onClick={handleLogin} text="Login" isLoading={authLoading} type="button" disabled={authLoading} />
 
           {/* Divider with trust note */}
           <div className="flex items-center gap-3 mt-6">

@@ -8,9 +8,11 @@ import App from "./App";
 
 import { BrowserRouter } from "react-router-dom";
 
+// @ts-ignore
 import "./index.css";
 import { store } from "../store";
 import { AppProvider } from "./context/AppDate";
+import {Toaster} from "react-hot-toast";
 
 ReactDOM.createRoot(
   document.getElementById("root")!
@@ -20,6 +22,7 @@ ReactDOM.createRoot(
     <StoreProvider store={store}>
       <BrowserRouter>
         <App />
+        <Toaster position="top-center" reverseOrder={false} />
       </BrowserRouter>
     </StoreProvider>
     </AppProvider>
