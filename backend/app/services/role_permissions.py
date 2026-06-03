@@ -54,23 +54,25 @@ def create_permission(db:Session):
         raise HTTPException(status_code=500 , detail=str(e))
 
 # assign permissions to role
-def assign_permission_to_role(data:assign_permission_to_role_validation , db:Session):
+def assign_permission_to_role(data: assign_permission_to_role_validation, db: Session):
     try:
+        # Delete all existing permissions for this role
+        db.query(RolePermission).filter(
+            RolePermission.role_id == data.role_id
+        ).delete()
+
+        # Insert the new set
         for perm_id in data.permission_id:
-            existing_assignment = db.query(RolePermission).filter(
-                RolePermission.role_id == data.role_id,
-                RolePermission.permission_id == perm_id
-            ).first()
-            if not existing_assignment:
-                role_permission = RolePermission(
-                    role_id=data.role_id,
-                    permission_id=perm_id
-                )
-                db.add(role_permission)
+            db.add(RolePermission(
+                role_id=data.role_id,
+                permission_id=perm_id
+            ))
+
         db.commit()
-        return {"message" : "Permissions assigned to role successfully"}
+        return {"message": "Permissions updated successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500 , detail=str(e))
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
 
 def get_permissions_for_role(role_id:int , db:Session):
     try:

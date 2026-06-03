@@ -3,11 +3,13 @@ import Button from "../components/UI/Button";
 import OptionsContainer from "../components/UI/OptionsContainer";
 import {
   useGetPermissionsQuery,
+  useGetRolesPermissionsQuery,
   useGetRolesQuery,
-  // useUpdateRolePermissionsMutation,
+  useUpdateRolePermissionsMutation,
 } from "../services/api/userSlice";
 import CustomTable from "../components/UI/CustomTable";
 import RoleCreationModal from "../components/Login/RoleCreationModal";
+import SkeletonTable from "../components/Loading/SkeletonTable";
 
 function ManageRoles() {
   const {
@@ -22,25 +24,42 @@ function ManageRoles() {
     isError: isPermissionError,
   } = useGetPermissionsQuery("permission");
 
-  // const [updateRolePermissions, { isLoading: isSaving }] =
-  //   useUpdateRolePermissionsMutation();
+  const {
+    data:rolesPermissions , 
+    isLoading:isRolePermisson,
+    isError:IsRPError , 
+    error:errorPR
+  } = useGetRolesPermissionsQuery("role-permissions")
+
+  const [updateRolePermissions, { isLoading: isSaving }] =
+    useUpdateRolePermissionsMutation();
 
   const [matrix, setMatrix] = useState<Record<number, Set<number>>>({});
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // build matrix from roles
-  useEffect(() => {
-    if (!roles) return;
-    const initial: Record<number, Set<number>> = {};
-    roles.forEach((role: any) => {
-      initial[role.id] = new Set(
-        (role.permissions ?? []).map((p: any) => p.id)
-      );
-    });
-    setMatrix(initial);
-  }, [roles]);
+
+
+// ✅ CORRECT — useEffect first, guard after
+useEffect(() => {
+  if (!rolesPermissions) return;
+  const initial: Record<number, Set<number>> = {};
+  rolesPermissions.forEach((item: any) => {
+    if (initial[item.role_id]) {
+      initial[item.role_id].add(item.permission_id);
+    } else {
+      const newSet = new Set<number>();
+      initial[item.role_id] = newSet.add(item.permission_id);
+    }
+  });
+  setMatrix(initial);
+}, [rolesPermissions]); // also fix dep: should be rolesPermissions, not roles
+
+// Now safe to early return
+if (isRolePermisson) {
+  return <OptionsContainer><SkeletonTable /></OptionsContainer>;
+}
 
   function handleToggle(roleId: number, permissionId: number) {
     setSaveSuccess(false);
@@ -54,25 +73,25 @@ function ManageRoles() {
     });
   }
 
-  // async function handleSave() {
-  //   if (!roles) return;
-  //   setSaveError(null);
-  //   setSaveSuccess(false);
-  //   try {
-  //     // save all roles in parallel
-  //     await Promise.all(
-  //       roles.map((role: any) =>
-  //         updateRolePermissions({
-  //           role_id: role.id,
-  //           permission_ids: Array.from(matrix[role.id] ?? []),
-  //         }).unwrap()
-  //       )
-  //     );
-  //     setSaveSuccess(true);
-  //   } catch (err: any) {
-  //     setSaveError(err?.data?.detail ?? "Failed to save permissions.");
-  //   }
-  // }
+  async function handleSave() {
+    if (!roles) return;
+    setSaveError(null);
+    setSaveSuccess(false);
+    try {
+      // save all roles in parallel
+      await Promise.all(
+        roles.map((role: any) =>
+          updateRolePermissions({
+            role_id: role.id,
+            permission_id: Array.from(matrix[role.id] ?? []),
+          }).unwrap()
+        )
+      );
+      setSaveSuccess(true);
+    } catch (err: any) {
+      setSaveError(err?.data?.detail ?? "Failed to save permissions.");
+    }
+  }
 
   // Permission name column + one column per role
   const columns = [
@@ -89,7 +108,7 @@ function ManageRoles() {
       ),
     },
     ...(roles ?? []).map((role: any) => ({
-      key: `role_${role.id}`,
+      key: `role_${role.id+role.name}`,
       label: role.name,
       render: (_: any, row: any) => (
         <input
@@ -170,9 +189,9 @@ function ManageRoles() {
               <Button
                 text="Save Changes"
                 variant="primary"
-                // isLoading={isSaving}
+                isLoading={isSaving}
                 loadingText="Saving…"
-                // onClick={handleSave}
+                onClick={handleSave}
               />
             </div>
 
