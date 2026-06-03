@@ -141,7 +141,7 @@ const Navbar = ({
           </div>
 
           <div>
-            <h1  className="font-bold text-[16px] leading-none  " >
+            <h1 className="font-bold text-[16px] leading-none  " >
               {title}
             </h1>
 

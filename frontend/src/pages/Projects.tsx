@@ -81,21 +81,19 @@ const Projects: React.FC = () => {
 
     
         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Create New Project" description="" size="sm">
-            <div className="flex gap-3 ">
-                <form className="w-full">
+            <div className="flex gap-3">
+               <form className="w-full space-y-2">
                     <CustomInput label="Project Name" placeholder="Enter project name" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
                     <CustomTextarea label="Summary" placeholder="Enter project summary" value={projectSummary} onChange={(e) => setProjectSummary(e)} />
                     <CustomRadio options={visibilityOptions} value={visibilityOptions.find(option => option.value === visibility) || null} onChange={(option) => setVisibility(option.value)} label="Visibility" orientation="horizontal" variant="card" />
                     <CustomRadio options={activeOptions} value={activeOptions.find(option => option.value === active) || null} onChange={(option) => setActive(option.value)} label="Active" orientation="horizontal" variant="card" />
-                    <div className="flex justify-end gap-2 mt-4">
+                    <div className="flex justify-end gap-2 mt-2">
                         <Button variant="outline" text="Cancel" onClick={() => setIsOpen(false)} />
                         <Button variant="primary" text="Create Project" onClick={() => setIsOpen(false)} />
                     </div>
                 </form>
             </div>
         </Modal>
-
-
     </div>;
 }
 

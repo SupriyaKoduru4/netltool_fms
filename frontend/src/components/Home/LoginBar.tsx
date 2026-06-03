@@ -33,10 +33,9 @@ const LoginBar: React.FC = () => {
 
         {/* Settings */}
         <IconButton
-          icon={<CiSettings size={20} />}
-          onClick={() => {}}
+         icon={<CiSettings size={20} />}
+         onClick={() => navigate("/settings")}
         />
-
         {/* Divider */}
         <div className="w-px h-6 bg-gray-200 mx-3" />
 

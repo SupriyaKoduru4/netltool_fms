@@ -49,7 +49,7 @@ function Modal({ isOpen, onClose, title, description, size = "md", children }: M
       >
         {/* Header */}
         {(title || description) && (
-          <div className="px-6 pt-6 pb-4 border-b border-gray-100">
+          <div className="px-5 pt-3 pb-2 border-b border-gray-100">
             {title && (
               <h2 className="text-base font-semibold text-gray-900 tracking-tight">
                 {title}
@@ -72,7 +72,7 @@ function Modal({ isOpen, onClose, title, description, size = "md", children }: M
         </button>
 
         {/* Body */}
-        <div className="px-6 py-5">{children}</div>
+        <div className="px-5 py-2">{children}</div>
       </div>
     </div>
   );
