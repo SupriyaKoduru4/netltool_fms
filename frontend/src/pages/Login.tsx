@@ -12,32 +12,22 @@ type Props = {
     >;
 };
 
-function Login({
-  setIsLoggedIn,
-}: Props) {
+function Login() {
 
-  const [showRegister, setShowRegister] =
-    useState(false);
-
+  
   return (
 
     <div>
 
-      {showRegister ? (
+      
 
-        <SignUp
-          setShowRegister={setShowRegister}
-          setIsLoggedIn={setIsLoggedIn}
-        />
-
-      ) : (
+       
 
         <SignIn
-          setShowRegister={setShowRegister}
-          setIsLoggedIn={setIsLoggedIn}
+         
         />
 
-      )}
+      
 
     </div>
 

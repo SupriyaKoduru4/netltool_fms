@@ -1,8 +1,12 @@
 import Navbar, { NavItem } from "../components/Home/Navbar";
 import CountCard from "../components/UI/CountCard";
 import OptionsContainer from "../components/UI/OptionsContainer";
+import { useAppData } from "../context/AppDate";
 
 const Homepage = () => {
+
+  const {user} = useAppData();
+
   return (
     <OptionsContainer>
       <div className="p-8 flex flex-col bg-[#F2F2F7] w-full h-full gap-8">
@@ -13,7 +17,7 @@ const Homepage = () => {
             Dashboard
           </p>
           <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
-            Hey Udai!
+            Hey {user?.first_name} {user?.last_name}!
           </h1>
           <p className="text-sm text-gray-400">
             Welcome to the Founder Management System

@@ -18,11 +18,10 @@ import Settings from "./pages/Settings";
 import ManageUsers from "./pages/ManageUsers";
 import ManageRoles from "./pages/ManageRoles";
 import BlogDetails from "./pages/BlogDetails";
+import ProtectedRoute from "./components/Home/ProtectedRoute";
 
 function App() {
 
-  const [isLoggedIn, setIsLoggedIn] =
-    useState(false);
 
   return (
 
@@ -32,7 +31,7 @@ function App() {
         <Route
           path="/login"
           element={
-            <Login setIsLoggedIn={setIsLoggedIn} />
+            <Login  />
           }
         />
         <Route 
@@ -41,6 +40,7 @@ function App() {
             <Register />
           }
         />
+      <Route element={<ProtectedRoute/>}>
         <Route
           path="/"
           element={
@@ -95,6 +95,7 @@ function App() {
         <Route path="/calendar" element={<ComingSoon title="Calendar" />} />
         <Route path="/blog/:id" element={<BlogDetails/>} />
         <Route path="/notifications" element={<ComingSoon title="Notifications" />} />
+        </Route>
       </Routes>
           
     </div>
