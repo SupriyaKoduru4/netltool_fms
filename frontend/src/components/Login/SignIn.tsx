@@ -22,7 +22,7 @@ type Props = {
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function SignIn({ setShowRegister, setIsLoggedIn }: Props) {
+function SignIn() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 

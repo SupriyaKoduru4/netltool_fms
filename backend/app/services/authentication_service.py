@@ -226,6 +226,20 @@ def sofl_delete_user(user_id:int , db:Session):
         raise e
     except Exception as e:
         raise HTTPException(status_code=500 , detail=str(e))
+    
+def get_user_login_details(token:str , db:Session):
+    try:
+        user = verify_access_token(token)
+        user_id = user["user_id"]
+        user = db.query(User).options(joinedload(User.role)).filter(User.id==user_id).first()
+        if not user:
+            raise HTTPException(status_code=404 , detail="User not found")
+        user.password = None
+        return user
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500 , detail=str(e))
 
 
 

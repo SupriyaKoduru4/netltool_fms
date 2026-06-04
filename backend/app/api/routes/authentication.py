@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.schemas.User import UserCreate
-from app.services.authentication_service import check_invitation_token, create_user_for_login, delete_user, get_user_profile, get_users, login_user , register_user , admin_update_user , get_user_by_id , disable_user , sofl_delete_user
+from app.services.authentication_service import check_invitation_token, create_user_for_login, delete_user, get_user_profile, get_users, login_user , register_user , admin_update_user , get_user_by_id , disable_user , sofl_delete_user , get_user_login_details
 
 router = APIRouter()
 
@@ -131,3 +131,17 @@ def admin_delete_user(user_id:int , db:Session=Depends(get_db)):
     except Exception as e:
         httpException = HTTPException(status_code=500, detail=str(e))
         raise httpException
+    
+@router.get("/user-details")
+def user_details_after_login(authorization: str = Header(...), db: Session = Depends(get_db)):
+    try:
+        token = authorization.replace("Bearer ", "")
+        user = get_user_login_details(token, db)
+        return {"user": user}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        httpException = HTTPException(status_code=500, detail=str(e))
+        raise httpException
+
+

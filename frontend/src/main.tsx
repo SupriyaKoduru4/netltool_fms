@@ -17,14 +17,14 @@ import {Toaster} from "react-hot-toast";
 ReactDOM.createRoot(
   document.getElementById("root")!
 ).render(
-  <React.StrictMode>
+  // <React.StrictMode>
+      <BrowserRouter>
     <AppProvider>
     <StoreProvider store={store}>
-      <BrowserRouter>
         <App />
         <Toaster position="top-center" reverseOrder={false} />
-      </BrowserRouter>
     </StoreProvider>
     </AppProvider>
-  </React.StrictMode>
+      </BrowserRouter>
+  // </React.StrictMode>
 );
