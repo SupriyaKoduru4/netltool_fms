@@ -19,10 +19,11 @@ def create_access_token(data:dict , expire_timedelta:timedelta = None):
 
 def verify_access_token(token:str):
     try:
+        print("this is the token we are verifying in the verify access token function" , token)
         payload = jwt.decode(token , SECRET_KEY , algorithms=[ALGORITHM])
         user_id = payload.get("user_id")
         if user_id is None:
-            raise HTTPException(status_code=401 , detail="Invalid token")
+            raise HTTPException(status_code=401 , detail="User Not authenticated or Registered")
         return payload
     except ExpiredSignatureError:
         raise HTTPException(status_code=401 , detail="Token has expired")

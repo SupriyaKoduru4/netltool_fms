@@ -7,9 +7,9 @@ from jose.exceptions import JWTError, ExpiredSignatureError
 from app.schemas.user_schema import login_schema
 from app.utils.security import hash_password, verify_password
 from fastapi import HTTPException
-from app.utils.auth_config import SECRET_KEY, ALGORITHM, INVITATION_URL
+from app.utils.auth_config import PASSWORD_RESET_URL, SECRET_KEY, ALGORITHM, INVITATION_URL
 
-from app.schemas.User import UserCreate, UserRegister
+from app.schemas.User import UserCreate, UserRegister, requestResetPassword
 from app.models.User import User
 from sqlalchemy.orm import Session , joinedload
 from app.services.mail_service import send_mail
@@ -215,6 +215,43 @@ def get_user_login_details(token:str , db:Session):
             raise HTTPException(status_code=404 , detail="User not found")
         user.password = None
         return user
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500 , detail=str(e))
+
+async def send_reset_password_mail(email:str , db:Session):
+    try:
+        user = db.query(User).filter(User.email == email).first()
+        print("this is the user we are getting in the send reset password mail function" , user.id)
+        if not user:
+            raise HTTPException(status_code=404 , detail="User not found")
+        reset_token = create_access_token({"user_id": user.id , "role_id": user.role_id} , expire_timedelta=timedelta(hours=1))
+        await send_mail(
+            mail_config=mail_config,
+            email_data=EmailRequest(
+                to=[email],
+                subject="Reset Password",
+                body=f"{PASSWORD_RESET_URL}{reset_token}"
+            )
+        )
+        return {"message" : "Reset password mail sent successfully"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500 , detail=str(e))
+    
+async def reset_password(token:str , new_password:str , db:Session):
+    try:
+        user = verify_access_token(token)
+        user_id = user["user_id"]
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=404 , detail="User not found")
+        user.password = hash_password(new_password)
+        db.commit()
+        db.refresh(user)
+        return {"message" : "Password reset successfully"}
     except HTTPException as e:
         raise e
     except Exception as e:

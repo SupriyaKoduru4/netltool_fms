@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import CustomInput from "../../components/Login/CustomInput";
 // @ts-ignore - image import may not have type declarations in this project
@@ -31,6 +32,8 @@ function SignIn() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const navigate = useNavigate();
 
   const handleLogin = () => {
     try {
@@ -157,9 +160,12 @@ function SignIn() {
                 Remember me
               </span>
             </label>
-            <p className="text-sm font-semibold text-black cursor-pointer hover:underline underline-offset-2 transition-all">
+            <button 
+              className="text-sm font-semibold text-black cursor-pointer hover:underline underline-offset-2 transition-all"
+              onClick={() => navigate("/forgot-password")}
+                >
               Forgot Password?
-            </p>
+            </button>
           </div>
 
           {/* Login button — same black, polished */}

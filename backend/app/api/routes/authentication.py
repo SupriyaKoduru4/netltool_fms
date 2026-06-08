@@ -1,12 +1,12 @@
 from app.schemas.user_schema import login_schema
 from app.utils.profile_upload import validate_profile_image , upload_profile_image
 from fastapi import APIRouter , Depends , HTTPException , Header , UploadFile , File , Form
-from app.schemas.User import UserCreate, UserRegister
+from app.schemas.User import UserCreate, UserRegister, requestResetPassword
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.schemas.User import UserCreate
-from app.services.authentication_service import check_invitation_token, create_user_for_login, delete_user, get_user_profile, get_users, login_user , register_user , admin_update_user , get_user_by_id , disable_user , sofl_delete_user , get_user_login_details, verify_access_token
+from app.services.authentication_service import check_invitation_token, create_user_for_login, delete_user, get_user_profile, get_users, login_user , register_user , admin_update_user , get_user_by_id , disable_user, reset_password, send_reset_password_mail , sofl_delete_user , get_user_login_details, verify_access_token
 
 router = APIRouter()
 
@@ -155,4 +155,26 @@ def user_details_after_login(authorization: str = Header(...), db: Session = Dep
         httpException = HTTPException(status_code=500, detail=str(e))
         raise httpException
 
-
+@router.post("/reset-password-request")
+async def request_reset_password(email: requestResetPassword, db: Session = Depends(get_db)):
+    try:
+        result = await send_reset_password_mail(email.email, db)
+        return result
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        httpException = HTTPException(status_code=500, detail=str(e))
+        raise httpException
+    
+@router.post("/reset-password")
+async def reset_password_route(new_password:str = Form(...) , authorization: str = Header(...), db: Session = Depends(get_db)):
+    try:
+        token = authorization.replace("Bearer ", "")
+        print("this is the token we are getting in the header" , token)
+        result = await reset_password(token, new_password, db)
+        return result
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        httpException = HTTPException(status_code=500, detail=str(e))
+        raise httpException
