@@ -10,10 +10,15 @@ import BlogsTableSkeleton from '../components/Loading/SkeletonTable'
 import SkeletonTable from '../components/Loading/SkeletonTable'
 
 import { MoreVertical } from "lucide-react";
+//@ts-ignore
 import viewIcon from "../assets/View.svg";
+//@ts-ignore
 import editIcon from "../assets/Edit.svg";
+//@ts-ignore
 import copyIcon from "../assets/Copy.svg";
+//@ts-ignore
 import shareIcon from "../assets/Share.svg";
+//@ts-ignore
 import deleteIcon from "../assets/Delete.svg";
 
 const blogData = [

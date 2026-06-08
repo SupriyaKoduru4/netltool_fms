@@ -1,6 +1,7 @@
 import { LogOutIcon, SettingsIcon, UserIcon } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useAppData } from "../../context/AppDate";
+import {useNavigate} from "react-router-dom";
 
 export function ProfileDropdown() {
   
@@ -19,8 +20,9 @@ export function ProfileDropdown() {
 
   const {user , logout} = useAppData();
 
-  console.log('ProfileDropdown - user:', user);
+  const navigate = useNavigate();
 
+  console.log('ProfileDropdown - user:', user);
 
   return (
     <div className="relative inline-block" ref={ref}>
@@ -30,7 +32,7 @@ export function ProfileDropdown() {
       >
         <div className="relative flex-shrink-0">
           <img
-            src={user?.avatar || "/profile.png"}
+            src={`${(import.meta as any).env.VITE_BASE_URL}${user?.avatar_url}`}
             alt="profile"
             className="w-8 h-8 rounded-full object-cover ring-2 ring-gray-100"
           />
@@ -58,7 +60,7 @@ export function ProfileDropdown() {
 
           {/* Menu items */}
           <div className="p-1.5">
-            <button className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+            <button className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left" onClick={()=>navigate("/settings")}>
               <UserIcon />
               View profile
             </button>

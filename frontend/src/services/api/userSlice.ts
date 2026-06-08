@@ -4,7 +4,17 @@ const API_BASE_URL = (import.meta as any).env.VITE_API_BASE_URL || 'http://local
 
 export const usersApi = createApi({
     reducerPath: "userApi",
-    baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: API_BASE_URL ,
+        prepareHeaders: (headers) => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                headers.set("Authorization", `Bearer ${token}`);
+            }
+            return headers;
+    
+    }}),
+    
      tagTypes: ["Users", "UserDetail", "Roles", "Permissions", "RolePermissions"],
     endpoints: (builder) => ({
 
@@ -21,7 +31,6 @@ export const usersApi = createApi({
                 ];
             },
         }),
-
         getUserDetails: builder.query({
             query: (id: string) => `/auth/get-user/${id}`,
             providesTags: (_result, _err, id) => [{ type: "UserDetail", id }],
@@ -104,6 +113,25 @@ export const usersApi = createApi({
                 { type: "UserDetail", id: user_id },
             ],
         }),
+        updateUserProfile: builder.mutation({
+            query: ({ body }) => ({
+                url: `/auth/update-profile`,
+                method: "PUT",
+                body,
+            }),
+            invalidatesTags: (_result, _err, { id }) => [
+                { type: "Users", id: "LIST" },
+                { type: "UserDetail", id },
+            ],
+        }),
+        RequestPasswordReset: builder.mutation({
+            query: (body) => ({
+                url: "/auth/reset-password-request",
+                method: "POST",
+                body:body,
+            }),
+                invalidatesTags: [{ type: "Users", id: "LIST" }],
+            }),
     }),
 });
 
@@ -118,5 +146,7 @@ export const {
     useGetPermissionsQuery , 
     useCreateRolesMutation , 
     useGetRolesPermissionsQuery , 
-    useUpdateRolePermissionsMutation
+    useUpdateRolePermissionsMutation , 
+    useUpdateUserProfileMutation, 
+    useRequestPasswordResetMutation
 } = usersApi;

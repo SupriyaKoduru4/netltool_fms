@@ -257,5 +257,24 @@ async def reset_password(token:str , new_password:str , db:Session):
     except Exception as e:
         raise HTTPException(status_code=500 , detail=str(e))
 
+def update_user_profile(data: dict, user_id: int, db: Session):
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
 
+        if not user:
+            raise HTTPException(
+                status_code=404,
+                detail="User not found"
+            )
+
+        for key, value in data.items():
+            setattr(user, key, value)
+
+        db.commit()
+        db.refresh(user)
+
+        return user
+
+    except HTTPException as e:
+        raise e
 

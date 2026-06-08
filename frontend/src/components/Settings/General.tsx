@@ -1,3 +1,4 @@
+import CustomInput from "../Login/CustomInput";
 import Button from "../UI/Button";
 
 function GeneralSettings() {
@@ -16,10 +17,11 @@ function GeneralSettings() {
             Organization Name
           </label>
 
-          <input
+          <CustomInput
             type="text"
-            defaultValue="Netltool_FMS"
-            className=" w-full border border-gray-300 rounded-md px-4 py-3 mt-2 outline-none"
+            value="Netltool_FMS"
+            // className=" w-full border border-gray-300 rounded-md px-4 py-3 mt-2 outline-none"
+            disabled
           />
 
         </div>
@@ -31,7 +33,7 @@ function GeneralSettings() {
           </label>
 
           <select
-            className=" w-full border border-gray-300 rounded-md px-4 py-3 mt-2 outline-none" >
+            className=" w-full border border-gray-300 rounded-md px-4 py-3 mt-2 outline-none"  disabled>
 
             <option>
               English
@@ -55,7 +57,9 @@ function GeneralSettings() {
           </label>
 
           <select
-            className=" w-full border border-gray-300 rounded-md px-4 py-3 mt-2 outline-none">
+            className=" w-full border border-gray-300 rounded-md px-4 py-3 mt-2 outline-none"
+            disabled
+          >
 
             <option>
               (GMT+05:30) India Standard Time

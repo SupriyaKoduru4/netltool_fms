@@ -3,10 +3,12 @@ from app.utils.profile_upload import validate_profile_image , upload_profile_ima
 from fastapi import APIRouter , Depends , HTTPException , Header , UploadFile , File , Form
 from app.schemas.User import UserCreate, UserRegister, requestResetPassword
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from app.db.database import get_db
 from app.schemas.User import UserCreate
-from app.services.authentication_service import check_invitation_token, create_user_for_login, delete_user, get_user_profile, get_users, login_user , register_user , admin_update_user , get_user_by_id , disable_user, reset_password, send_reset_password_mail , sofl_delete_user , get_user_login_details, verify_access_token
+from app.services.authentication_service import check_invitation_token, create_user_for_login, delete_user, get_user_profile, get_users, login_user , register_user , admin_update_user , get_user_by_id , disable_user, reset_password, send_reset_password_mail , sofl_delete_user , get_user_login_details, verify_access_token , update_user_profile
+from app.utils.session_creator import verify_access_token_auth
 
 router = APIRouter()
 
@@ -178,3 +180,51 @@ async def reset_password_route(new_password:str = Form(...) , authorization: str
     except Exception as e:
         httpException = HTTPException(status_code=500, detail=str(e))
         raise httpException
+
+
+
+@router.put("/update-profile")
+def update_profile_route(
+    first_name: Optional[str] = Form(None),
+    last_name: Optional[str] = Form(None),
+    phone: Optional[str] = Form(None),
+    company: Optional[str] = Form(None),
+    profile_image: UploadFile | None = File(None),
+    user=Depends(verify_access_token_auth),
+    db: Session = Depends(get_db)
+):
+    try:
+        update_data = {}
+
+        if first_name is not None:
+            update_data["first_name"] = first_name
+
+        if last_name is not None:
+            update_data["last_name"] = last_name
+
+        if phone is not None:
+            update_data["phone"] = phone
+
+        if company is not None:
+            update_data["company"] = company
+
+        if profile_image:
+            profile_image_path = upload_profile_image(
+                profile_image,
+                user["user_id"]
+            )
+            update_data["avatar_url"] = profile_image_path
+
+        updated_user = update_user_profile(
+            update_data,
+            user["user_id"],
+            db
+        )
+
+        return {
+            "message": "Profile updated successfully",
+            "user": updated_user
+        }
+
+    except HTTPException as e:
+        raise e

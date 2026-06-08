@@ -6,18 +6,30 @@ import Button from "../components/UI/Button";
 import officeBg from "../assets/Login/backgroundimage.png";
 // @ts-ignore
 import mailIcon from "../assets/Login/mail.svg";
+import { useRequestPasswordResetMutation } from "../services/api/userSlice";
 
 function ForgotPassword() {
+   console.log("render");
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const navigate = useNavigate();
 
-  const handleSend = () => {
-    if (email) {
+  const [requestPasswordReset, { isLoading , isError  , isSuccess  , error}] = useRequestPasswordResetMutation();
+
+  const handleSend = async  () => {
+    try{
+      console.log("Requesting password reset for email:", email);
+      if (email) {
+      await requestPasswordReset({ email }).unwrap();
       setSent(true);
     } else {
       alert("Please enter your email");
     }
+    }catch(err){
+      console.error("Error sending password reset request:", err);
+      alert("Failed to send reset instructions. Please try again.");
+    }
+    
   };
 
   return (
@@ -91,7 +103,7 @@ function ForgotPassword() {
                 />
               </div>
 
-              <Button text="Send Reset Mail" variant="long" onClick={handleSend} />
+              <Button text="Send Reset Mail" variant="long" onClick={handleSend} isLoading={isLoading} disabled={isLoading} />
 
               <div className="mt-5 text-center">
                 <button

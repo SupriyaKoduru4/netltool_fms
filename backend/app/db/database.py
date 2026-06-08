@@ -6,7 +6,9 @@ import os
 
 load_dotenv()  # Load environment variables from .env file
 
-DATABASE_URL = os.getenv("DATABASE_URL") or "postgresql://postgres:50$#a$#502002@db.clqdiprnbhtwnexmyvsw.supabase.co:5432/postgres"
+# DATABASE_URL=postgresql://postgres.clqdiprnbhtwnexmyvsw:[YOUR-PASSWORD]@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres
+
+DATABASE_URL = os.getenv("DATABASE_URL") or "postgresql://postgres.clqdiprnbhtwnexmyvsw:50$#a$#502002@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres"
 
 engine = create_engine(DATABASE_URL)
 
@@ -18,7 +20,6 @@ def get_db():
 
     try:
         yield db
-
     finally:
         db.close()
 
