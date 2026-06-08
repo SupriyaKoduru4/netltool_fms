@@ -6,7 +6,7 @@ import os
 
 load_dotenv()  # Load environment variables from .env file
 
-DATABASE_URL = os.getenv("DATABASE_URL") or "postgresql://netltool_user:robotics123@localhost:5432/netltoolfms"
+DATABASE_URL = os.getenv("DATABASE_URL") or "postgresql://postgres:50$#a$#502002@db.clqdiprnbhtwnexmyvsw.supabase.co:5432/postgres"
 
 engine = create_engine(DATABASE_URL)
 

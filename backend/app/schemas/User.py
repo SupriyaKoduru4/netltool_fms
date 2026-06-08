@@ -13,6 +13,9 @@ class UserRegister(BaseModel):
     first_name:str 
     last_name:str
     phone:str
+
+class requestResetPassword(BaseModel):
+    email:str
     
     
 
