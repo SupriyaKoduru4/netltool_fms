@@ -1,9 +1,10 @@
-import react, { useContext, useEffect } from 'react'
+import react, { useContext, useEffect, useState } from 'react'
 import { createContext } from "react";
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import Register from '../pages/Register';
 import { useNavigate } from 'react-router-dom';
+import { useGetRolesPermissionsQuery } from '../services/api/userSlice';
 
 interface IAppData{
     user:any ; 
@@ -11,6 +12,7 @@ interface IAppData{
     authLoading:boolean;
     isError:boolean;
     error:any;
+    permissions:any;
     isLoggedIn:boolean;
     login:({email,password}:{email:string,password:string})=>Promise<void>;
     logout:()=>void;
@@ -23,12 +25,13 @@ export const AppDataContext = createContext<IAppData | null>(null)
 
 export function AppProvider({children}:{children:react.ReactNode}){
 
-    const [user, setUser] = react.useState(null);
+    const [user, setUser] = react.useState<any>(null);
     const [appLoading, setAppLoading] = react.useState(true);
     const [authLoading, setAuthLoading] = react.useState(false);
     const [isError, setIsError] = react.useState(false);
     const [error, setError] = react.useState<any|null>(null);
     const [isLoggedIn, setIsLoggedIn] = react.useState(false);
+    const [permissions , setPermissions] = useState<any>(null)
 
     //navigate
     const navigate = useNavigate();
@@ -60,16 +63,31 @@ export function AppProvider({children}:{children:react.ReactNode}){
         }
     }
 
+    async function getRolePermission(){
+        if(!user)return 
+        console.log(user)
+        setAppLoading(true)
+        try{
+            
+            const response = await axios.get(`${BASE_URL}/role-permission/get-permissions-for-role/${user?.role_id}`)
+            console.log('this response' , response)
+            setPermissions(response?.data?.permissions)
+        }catch(err){
+            console.log(err)
+        }finally{
+            setAppLoading(false)
+        }
+    }
+
     useEffect(()=>{
         checkLoggedIn();
+        
     },[])
 
-    
+    useEffect(()=>{
+        getRolePermission();
+    } , [user])
 
-    //register 
-    function updateUser(userData:any){
-        
-    }
 
     //login function
     async function login({email,password}:{email:string,password:string}){
@@ -103,7 +121,7 @@ export function AppProvider({children}:{children:react.ReactNode}){
         toast.success('Logged out successfully!');
     }
     
-    return <AppDataContext.Provider value={{login, logout , user, appLoading, authLoading, isError, error, isLoggedIn}}>
+    return <AppDataContext.Provider value={{permissions ,login, logout , user, appLoading, authLoading, isError, error, isLoggedIn}}>
         {children}
     </AppDataContext.Provider>
 }
