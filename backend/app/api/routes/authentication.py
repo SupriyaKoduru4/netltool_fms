@@ -9,6 +9,8 @@ from app.db.database import get_db
 from app.schemas.User import UserCreate
 from app.services.authentication_service import check_invitation_token, create_user_for_login, delete_user, get_user_profile, get_users, login_user , register_user , admin_update_user , get_user_by_id , disable_user, reset_password, send_reset_password_mail , sofl_delete_user , get_user_login_details, verify_access_token , update_user_profile
 from app.utils.session_creator import verify_access_token_auth
+from app.middleware.permission_dependency import require_permission
+from app.constants.permissions import Permissions
 
 router = APIRouter()
 
@@ -16,6 +18,7 @@ router = APIRouter()
 @router.post("/create-user-for-login")
 async def create(
     user : UserCreate,
+    current_user:str = Depends(require_permission(Permissions.USER_CREATE)),
     db : Session = Depends(get_db)
 ):
     try:
@@ -124,7 +127,7 @@ def get_user_details(user_id:int , db:Session=Depends(get_db)):
         raise httpException
 
 @router.put("/user-disable/{user_id}")
-def admin_disable_user(user_id:int , db:Session=Depends(get_db)):
+def admin_disable_user(user_id:int ,current_user:str=Depends(require_permission(Permissions.USER_CREATE)), db:Session=Depends(get_db)):
     try:
         disable_user(user_id , db)
         return {"message":"User disable successfullly"}
@@ -135,7 +138,7 @@ def admin_disable_user(user_id:int , db:Session=Depends(get_db)):
         raise httpException
     
 @router.put("/delete-user/{user_id}")
-def admin_delete_user(user_id:int , db:Session=Depends(get_db)):
+def admin_delete_user(user_id:int, current_user:str=Depends(require_permission(Permissions.USER_DELETE)) , db:Session=Depends(get_db)):
     try:
         sofl_delete_user(user_id , db)
         return {"message":"User delelted successfully"}

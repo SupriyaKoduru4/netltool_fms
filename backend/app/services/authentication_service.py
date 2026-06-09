@@ -71,7 +71,7 @@ def login_user(data:login_schema , db:Session):
         verify = verify_password(data.password , user.password)
         if not verify:
             raise HTTPException(status_code=401 , detail="Invalid credentials")
-        access_token = create_access_token({"user_id" : user.id , "role" : {"role_id":user.role.id, "role_name":user.role.name}})
+        access_token = create_access_token({"user_id" : user.id , "role" :user.role_id})
         return {"access_token" : access_token , "token_type" : "bearer"}
     except HTTPException as e:
         raise e
