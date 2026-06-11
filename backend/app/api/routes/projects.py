@@ -17,7 +17,7 @@ def create(project_data: ProjectCreate , current_user: str = Depends(require_per
         # Call the create_project function from the service
         project = create_project(
             project_data=project_data,
-            current_user=current_user,
+            current_user=current_user["user_id"],
             db=db
         )
         return {"message": "Project created successfully", "project": project}

@@ -1,15 +1,15 @@
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useState } from "react";
 
 import LoginBar from "../components/Home/LoginBar"
 import Button from "../components/UI/Button"
 import CustomTable from "../components/UI/CustomTable"
 import OptionsContainer from "../components/UI/OptionsContainer"
-import { useGetBlogByIdQuery, useGetBlogsQuery } from '../services/api/blogSlice'
+import { useDeleteBlogMutation, useGetBlogByIdQuery, useGetBlogsQuery } from '../services/api/blogSlice'
 import BlogsTableSkeleton from '../components/Loading/SkeletonTable'
 import SkeletonTable from '../components/Loading/SkeletonTable'
 
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Rows } from "lucide-react";
 //@ts-ignore
 import viewIcon from "../assets/View.svg";
 //@ts-ignore
@@ -20,48 +20,79 @@ import copyIcon from "../assets/Copy.svg";
 import shareIcon from "../assets/Share.svg";
 //@ts-ignore
 import deleteIcon from "../assets/Delete.svg";
+import { dateFromMatter } from '../utils/DateFomatter';
+import Modal from '../components/UI/Modal';
 
 const blogData = [
-    {id: 1, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit"},
-    {id: 2, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit"},
-    {id: 3, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit"},
-    {id: 4, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit"},
-    {id: 5, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit"},
-    {id: 6, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit"},
-    {id: 7, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit"},
-    {id: 8, title: "Advanced TypeScript Patterns", author: "Jane Smith", date: "2024-01-20", actions: "Edit"},
-    {id: 9, title: "Web Performance Optimization", author: "Mike Johnson", date: "2024-01-25", actions: "Edit"},
+  { id: 1, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit" },
+  { id: 2, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit" },
+  { id: 3, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit" },
+  { id: 4, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit" },
+  { id: 5, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit" },
+  { id: 6, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit" },
+  { id: 7, title: "Getting Started with React", author: "John Doe", date: "2024-01-15", actions: "Edit" },
+  { id: 8, title: "Advanced TypeScript Patterns", author: "Jane Smith", date: "2024-01-20", actions: "Edit" },
+  { id: 9, title: "Web Performance Optimization", author: "Mike Johnson", date: "2024-01-25", actions: "Edit" },
 ]
 
-const Blogs = ()=>{
+const Blogs = () => {
 
-    const navigate = useNavigate()
-      const [openMenu, setOpenMenu] = useState<number | null>(null);
+  const navigate = useNavigate()
+  const [openMenu, setOpenMenu] = useState<number | null>(null);
+  const [copiedId, setCopiedId] = useState("")
+  const [confirModal , setConfirmModal] = useState(false)
+  const [selectedTitle , setSelectedTitle ] = useState("")
+  const [selectedId , setselectedId] = useState<null|string>(null)
 
-    // service apis
-    const {data , isLoading , isError , error} = useGetBlogsQuery("blogs")
-    console.log("Blogs data: ", data, isLoading, )
+  // service apis
+  const { data, isLoading, isError, error } = useGetBlogsQuery("blogs")
+  console.log("Blogs data: ", data, isLoading,)
+  const [deleteBlog , {isLoading:deleting , isError:deleteError}]  = useDeleteBlogMutation()
 
-     const handleCreateNewBlog = () => {
-        navigate("/blog-editor");
-      };
+  const handleCreateNewBlog = () => {
+    navigate("/blog-editor");
+  };
 
-      
-const column = [
-    {key:"id" , label:"id"},
-    {key: "title", label: "Title",
-        render: (value: any, row: any) => (
-            <button 
-            onClick={() => navigate(`/blog/${row._id || row._id}`)}
-            className='text-left font-medium hover:text-back-700 hover:underline'>
-                {value}
-            </button>
-        )
+  // handle copy button 
+  async function handleCopyLink(id: string) {
+    const url = `${window.location.origin}/blog/${id}`;
+    await navigator.clipboard.writeText(url);
+  }
+
+
+  const column = [
+    { key: "id", label: "id" },
+    {
+      key: "title", label: "Title",
+      render: (value: any, row: any) => (
+        <button
+          onClick={() => navigate(`/blog/${row.id || row.id}`)}
+          className='text-left font-medium hover:text-back-700 hover:underline'>
+          {value}
+        </button>
+      )
     },
-    {key: "author_id", label: "Author"},
-    {key:"summary" , label:"Summary"},
-    {key: "date", label: "Date"}, 
-       {
+    {
+      key: "author_id", label: "Author",
+      render: (value: any, row: any) => (
+        <p>{row?.user?.first_name}</p>
+      )
+    },
+
+    { key: "summary", label: "Summary" },
+    {
+      key: "created_at", label: "Date",
+      render: (_: any, row: any) => (
+        <p>{dateFromMatter(row.created_at)}</p>
+      )
+    },
+    {
+      key: "status", label: "status",
+      render: (value: any, row: any) => (
+        <p className='bg-green-200 px-4 py-2 rounded-xl text-center'>Published</p>
+      )
+    },
+    {
       key: "actions",
       label: "Actions",
       render: (_: any, row: any) => (
@@ -83,7 +114,7 @@ const column = [
           {openMenu === row.id && (
             <div className="absolute right-0 top-12 z-50 w-52 rounded-md border border-gray-200 bg-white shadow-lg">
 
-              <button className="flex w-full items-center gap-3 px-4 py-3 hover:bg-gray-100">
+              <button className="flex w-full items-center gap-3 px-4 py-3 hover:bg-gray-100" onClick={() => navigate(`/blog/${row.id}`)}>
                 <img
                   src={viewIcon}
                   alt="view"
@@ -106,25 +137,40 @@ const column = [
                 Edit Blog
               </button>
 
-              <button className="flex w-full items-center gap-3 px-4 py-3 hover:bg-gray-100">
+              <button
+                className="flex w-full items-center gap-3 px-4 py-3 hover:bg-gray-100 transition-all duration-300"
+                onClick={() => {
+                  setCopiedId(row.id);
+                  handleCopyLink(row.id);
+
+                  setTimeout(() => {
+                    setCopiedId("");
+                  }, 2000);
+                }}
+              >
                 <img
                   src={copyIcon}
                   alt="copy"
-                  className="h-4 w-4"
+                  className={`h-4 w-4 transition-all duration-300 ${copiedId === row.id ? "scale-110 opacity-70" : "scale-100 opacity-100"
+                    }`}
                 />
-                Copy
+
+                <span
+                  className={`transition-all duration-300 ${copiedId === row.id
+                      ? "text-green-600 font-medium"
+                      : "text-gray-700"
+                    }`}
+                >
+                  {copiedId === row.id ? "✓ Copied!" : "Copy Link"}
+                </span>
               </button>
 
-              <button className="flex w-full items-center gap-3 px-4 py-3 hover:bg-gray-100">
-                <img
-                  src={shareIcon}
-                  alt="share"
-                  className="h-4 w-4"
-                />
-                Share
-              </button>
-
-              <button className="flex w-full items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50">
+              <button className="flex w-full items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50" onClick={()=>{
+                setConfirmModal(true)
+                setSelectedTitle(row?.title)
+                setselectedId(row.id)
+                setOpenMenu(null)
+              }}>
                 <img
                   src={deleteIcon}
                   alt="delete"
@@ -140,46 +186,90 @@ const column = [
     },
   ];
 
-      if(isLoading) {
-        return <OptionsContainer>
-            <SkeletonTable/>
-        </OptionsContainer>
-      }
+  if (isLoading) {
+    return <OptionsContainer>
+      <SkeletonTable />
+    </OptionsContainer>
+  }
 
-      if(isError){
-        <OptionsContainer>
-            <div>
-                <h1>Something went wrong</h1>
-                <p></p>
-            </div>
-        </OptionsContainer>
-      }
+  if (isError) {
+    <OptionsContainer>
+      <div>
+        <h1>Something went wrong</h1>
+        <p></p>
+      </div>
+    </OptionsContainer>
+  }
 
-    return <div>
-        <OptionsContainer>
-            <div className="p-6" >
-                <div className="flex flex-row justify-between mb-4">
-                    <div>
-                       <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                          Blogs / Notes
-                       </h1>
-                        <p className="text-sm text-gray-500">
-                         Record, edit, and manage your Blog posts.
-                        </p>
-                    </div>
-                     
-                     <div >
-                        <Button text=" + Create New Blog  " onClick={handleCreateNewBlog} variant="primary"/>
-                     </div>
+  return <div>
 
-                </div>
-              
-                <div>
-                    <CustomTable columns={column}  data={data?.blogs || []}/>
-                </div>
-            </div>
-        </OptionsContainer>
+    {/* model to confirmation delete */}
+  <Modal
+  isOpen={confirModal}
+  onClose={() => {setConfirmModal(false)
+    setSelectedTitle("")
+    setselectedId(null)
+  }}
+>
+  <div className="p-6">
+    <h2 className="text-lg font-semibold text-gray-900">
+      Delete Blog
+    </h2>
+
+    <p className="mt-2 text-sm text-gray-600">
+      Are you sure you want to delete this blog ? <br />{selectedTitle} <br /> This action cannot be undone.
+    </p>
+
+    <div className="mt-6 flex justify-end gap-3">
+      <button
+        onClick={() => setConfirmModal(false)}
+        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+      >
+        Cancel
+      </button>
+
+      <Button
+      text='Delete blog'
+        onClick={async () => {
+          try {
+            await deleteBlog(selectedId); // your delete API call
+            setConfirmModal(false);
+          } catch (error) {
+            console.error(error);
+          }
+        }}
+       variant='danger'
+       isLoading={deleting}
+      />
+      
+      
     </div>
+  </div>
+</Modal>
+    <OptionsContainer>
+      <div className="p-6" >
+        <div className="flex flex-row justify-between mb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">
+              Blogs / Notes
+            </h1>
+            <p className="text-sm text-gray-500">
+              Record, edit, and manage your Blog posts.
+            </p>
+          </div>
+
+          <div >
+            <Button text=" + Create New Blog  " onClick={handleCreateNewBlog} variant="primary" />
+          </div>
+
+        </div>
+
+        <div>
+          <CustomTable columns={column} data={data?.blogs || []} />
+        </div>
+      </div>
+    </OptionsContainer>
+  </div>
 }
 
 export default Blogs

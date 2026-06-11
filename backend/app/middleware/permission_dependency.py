@@ -73,6 +73,6 @@ def require_permission(
                 detail="Permission denied"
             )
 
-        return current_user["user_id"]
+        return current_user
 
     return checker

@@ -5,6 +5,7 @@ from app.api.routes.streamlab import router as streamlab_apis
 from app.api.routes.blog import router as blog_apis
 from app.api.routes.projects import router as projects_apis
 from app.api.routes.role_permission import router as role_permission_apis
+from app.api.routes.stats import router as stats_router
 
 api_router = APIRouter()
 api_router.include_router(
@@ -18,6 +19,12 @@ api_router.include_router(
     prefix="/streamlab",
     tags=["streamlab"]
 )   
+
+api_router.include_router(
+    stats_router    ,
+    prefix="/stats",
+    tags=["stats"]
+)  
 
 api_router.include_router(
     blog_apis,

@@ -21,6 +21,7 @@ import BlogDetails from "./pages/BlogDetails";
 import ProtectedRoute from "./components/Home/ProtectedRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import BlogEdit from "./pages/BlogEdit";
 
 function App() {
 
@@ -44,6 +45,7 @@ function App() {
         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword/>}/>
+         <Route path="/blog/:id" element={<BlogDetails/>} />
       <Route element={<ProtectedRoute/>}>
         <Route
           path="/"
@@ -85,6 +87,7 @@ function App() {
         element={<Projects/>}
         />
         <Route path="/blog-editor" element={<BlogEditor/>} />
+        <Route path="/blog-editor/:id" element={<BlogEdit/>} />
 
         <Route path="/project-updates/:projectId" element={<ProjectUpdates />} />
 
@@ -97,7 +100,7 @@ function App() {
         <Route path="/hardwarecomponents" element={<ComingSoon title="Hardware Components" />} />
         <Route path="/tasks" element={<ComingSoon title="Tasks" />} />
         <Route path="/calendar" element={<ComingSoon title="Calendar" />} />
-        <Route path="/blog/:id" element={<BlogDetails/>} />
+       
         <Route path="/notifications" element={<ComingSoon title="Notifications" />} />
         </Route>
       </Routes>

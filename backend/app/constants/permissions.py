@@ -17,3 +17,6 @@ class Permissions:
     USER_CREATE = "users:create"
 
     USER_DELETE = "users:delete"
+
+
+allow_super_powers = [2]

@@ -13,9 +13,9 @@ from app.constants.permissions import Permissions
 router = APIRouter()
 
 @router.get("/all")
-async def get_blogs(db: Session = Depends(get_db)):
+async def get_blogs(current_user:str =Depends(require_permission(Permissions.BLOG_VIEW)) ,db: Session = Depends(get_db)):
     try:
-        blogs = get_all_blogs(db=db)
+        blogs = get_all_blogs(current_user ,db=db)
         return {"blogs": blogs}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -35,7 +35,7 @@ async def create(
             tags=request.tags,
             summary=request.summary,
             components=request.components,
-            current_user=current_user,
+            current_user=current_user["user_id"],
             db=db
         )
         print("Generated Blog:", created_blog)

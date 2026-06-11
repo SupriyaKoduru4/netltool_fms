@@ -7,6 +7,7 @@ import OptionsContainer from "../components/UI/OptionsContainer";
 import CustomInput from "../components/Login/CustomInput";
 import CustomRadio from "../components/UI/CustomRadio";
 import CustomTextarea from "../components/UI/CustomTextarea";
+import ComingSoon from "./ComingSoon";
 
 const visibilityOptions = [
     { id: 1, value: "public", label: "Public" },
@@ -54,6 +55,12 @@ const Projects: React.FC = () => {
     const [projectSummary, setProjectSummary] = useState("");
     const [visibility, setVisibility] = useState(visibilityOptions[0].value);
     const [active, setActive] = useState(activeOptions[0].value);
+    const [development , setDevelopment] = useState(true)
+
+
+    if(development){
+        return <ComingSoon title="Project"/>
+    }
 
     return <div>
         <OptionsContainer>
