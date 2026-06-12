@@ -6,15 +6,24 @@ from sqlalchemy.orm import Session
 from typing import Optional
 
 from app.db.database import get_db
-from app.schemas.User import UserCreate
-from app.services.authentication_service import check_invitation_token, create_user_for_login, delete_user, get_user_profile, get_users, login_user , register_user , admin_update_user , get_user_by_id , disable_user, reset_password, send_reset_password_mail , sofl_delete_user , get_user_login_details, verify_access_token , update_user_profile
+from app.schemas.User import UserCreate , requestInvitation
+from app.services.authentication_service import resend_registration, check_invitation_token, create_user_for_login, delete_user, get_user_profile, get_users, login_user , register_user , admin_update_user , get_user_by_id , disable_user, reset_password, send_reset_password_mail , sofl_delete_user , get_user_login_details, verify_access_token , update_user_profile
 from app.utils.session_creator import verify_access_token_auth
 from app.middleware.permission_dependency import require_permission
 from app.constants.permissions import Permissions
+from app.utils.resend_mail import send_email
 
 router = APIRouter()
 
 import socket
+
+@router.get("/test-email")
+def test_email():
+    return send_email(
+        "karumuriudaisai002@gmail.com",
+        "Test",
+        "<h1>Hello from Railway</h1>"
+    )
 
 @router.get("/smtp-test")
 def smtp_test():
@@ -241,5 +250,12 @@ def update_profile_route(
             "user": updated_user
         }
 
+    except HTTPException as e:
+        raise e
+
+@router.post("/resend-invitation/{user_id}")
+def resed_invitation(user_id:int , db:Session=Depends(get_db)):
+    try:
+        resend_registration(user_id , db)
     except HTTPException as e:
         raise e

@@ -12,11 +12,96 @@ from app.utils.auth_config import PASSWORD_RESET_URL, SECRET_KEY, ALGORITHM, INV
 from app.schemas.User import UserCreate, UserRegister, requestResetPassword
 from app.models.User import User
 from sqlalchemy.orm import Session , joinedload
-from app.services.mail_service import send_mail
+# from app.services.mail_service import send_mail
+from app.utils.resend_mail import send_email
 from app.utils.mail_config import mail_config
 from app.schemas.email_schema import EmailRequest
 
 from app.utils.session_creator import create_access_token, verify_access_token
+
+
+def html_template(invitation_token: str):
+    invite_link = f"{INVITATION_URL}{invitation_token}"
+
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Invitation</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
+        <table width="100%" cellspacing="0" cellpadding="0">
+            <tr>
+                <td align="center">
+                    <table width="600" cellspacing="0" cellpadding="0"
+                        style="background-color: #ffffff; border-radius: 8px; padding: 40px;">
+                        
+                        <tr>
+                            <td align="center">
+                                <h1 style="color: #333;">You're Invited!</h1>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <p style="font-size: 16px; color: #555;">
+                                    You have been invited to join our platform.
+                                </p>
+
+                                <p style="font-size: 16px; color: #555;">
+                                    Click the button below to accept your invitation and get started.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding: 30px 0;">
+                                <a href="{invite_link}"
+                                    style="
+                                        background-color: #2563eb;
+                                        color: white;
+                                        text-decoration: none;
+                                        padding: 12px 24px;
+                                        border-radius: 6px;
+                                        display: inline-block;
+                                        font-weight: bold;
+                                    ">
+                                    Accept Invitation
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <p style="font-size: 14px; color: #888;">
+                                    If the button doesn't work, copy and paste the following link into your browser:
+                                </p>
+
+                                <p style="word-break: break-all;">
+                                    <a href="{invite_link}">
+                                        {invite_link}
+                                    </a>
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding-top: 30px;">
+                                <hr>
+                                <p style="font-size: 12px; color: #999; text-align: center;">
+                                    This invitation link may expire. If you did not expect this invitation, you can safely ignore this email.
+                                </p>
+                            </td>
+                        </tr>
+
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
 
 
 async def create_user_for_login(user: UserCreate, db: Session):
@@ -46,20 +131,36 @@ async def create_user_for_login(user: UserCreate, db: Session):
     db_user.invitation_token = invitation_token
     db_user.invitation_expiry = datetime.utcnow() + timedelta(hours=24)
 
-    db.commit()
+  
 
-    await send_mail(
-        mail_config=mail_config,
-        email_data=EmailRequest(
-            to=[user.email],
-            subject="Invitation Mail",
-            body=f"{INVITATION_URL}{invitation_token}"
-        )
+    send_email(
+        subject="Inviation for login in FMS Dashboard" , 
+        to_email=db_user.email , 
+        html=html_template(invitation_token)
     )
+
+    db.commit()
 
     return db_user
     
-
+def resend_registration(user_id:int , db:Session):
+    try:
+        user = db.query(User).filter(User.id==user_id).first()
+        invitation_token = create_access_token(
+        {"user_id": user.id , "role" : user.role_id} , expire_timedelta=timedelta(hours=24)
+        )
+        user.invitation_token = invitation_token
+        user.invitation_expiry = datetime.utcnow() + timedelta(hours=24)
+        send_email(
+           subject="Inviation for login in FMS Dashboard" , 
+        to_email=user.email , 
+        html=html_template(invitation_token)
+        )
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500 , detail=str(e))
+        
 # login user 
 def login_user(data:login_schema , db:Session):
     try:

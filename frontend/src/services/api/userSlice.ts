@@ -131,7 +131,13 @@ export const usersApi = createApi({
                 body:body,
             }),
                 invalidatesTags: [{ type: "Users", id: "LIST" }],
-            }),
+        }),
+        resendInvitation:builder.mutation({
+            query:(id)=>({
+                url:`/auth/resend-invitation/${id}`,
+                method:"POST"
+            })
+        })
         
     }),
 });
@@ -149,5 +155,6 @@ export const {
     useGetRolesPermissionsQuery , 
     useUpdateRolePermissionsMutation , 
     useUpdateUserProfileMutation, 
-    useRequestPasswordResetMutation
+    useRequestPasswordResetMutation , 
+    useResendInvitationMutation
 } = usersApi;

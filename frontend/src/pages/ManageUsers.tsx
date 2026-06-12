@@ -1,12 +1,15 @@
-import { SetStateAction, useEffect, useState } from 'react'
+import React, { SetStateAction, useEffect,useRef, useState } from 'react'
 import SkeletonTable from '../components/Loading/SkeletonTable'
 import Button from '../components/UI/Button'
 import CustomTable from '../components/UI/CustomTable'
 import Modal from '../components/UI/Modal'
 import OptionsContainer from '../components/UI/OptionsContainer'
-import { useAdminUpdateUserMutation, useCreateUserMutation, useDeleteUserMutation, useDisbaleUserMutation, useGetRolesQuery, useGetUserDetailsQuery, useGetUsersQuery } from '../services/api/userSlice'
+import { useAdminUpdateUserMutation, useCreateUserMutation, useDeleteUserMutation, useDisbaleUserMutation, useGetRolesQuery, useGetUserDetailsQuery, useGetUsersQuery, useResendInvitationMutation } from '../services/api/userSlice'
 import CustomInput from '../components/Login/CustomInput'
 import ConfirmationModal from '../components/UI/ConfirmationModal'
+import { MoreVertical, Edit, Trash2, RotateCcw, UserX, UserCheck } from "lucide-react";
+import toast from 'react-hot-toast'
+// import { useState, useRef, useEffect } from "react";
 
 interface IUserModal {
   isOpen: boolean;
@@ -228,6 +231,140 @@ function UserFormModal({ isOpen, setIsOpen, id }: IUserModal) {
 }
 
 
+const ActionDropdown = ({ row  , setIsOpen , setUserId , setIsDelete  , setIsDisable , userId }: { row: any, setIsOpen:React.Dispatch<SetStateAction<boolean>> ,setUserId:React.Dispatch<SetStateAction<string|null>> , setIsDelete:React.Dispatch<SetStateAction<boolean>>  , setIsDisable:React.Dispatch<SetStateAction<boolean>> , userId:string|null}) => {
+
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const [resendInvitation , {isLoading , isError , error}] = useResendInvitationMutation()
+
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="p-2 rounded-md hover:bg-gray-100 transition"
+      >
+        <MoreVertical size={18} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+          
+          <button
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+            onClick={() => {
+              setOpen(false);
+              setIsOpen(true);
+              setUserId(row.id);
+            }}
+          >
+            <Edit size={16} />
+            Edit User
+          </button>
+
+          {!row.is_deleted && (
+            <button
+            
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+              onClick={() => {
+                setOpen(false);
+                setUserId(row.id);
+                setIsDisable(true);
+              }}
+            >
+              {row.is_active ? (
+                <>
+                  <UserX size={16} />
+                  Disable User
+                </>
+              ) : (
+                <>
+                  <UserCheck size={16} />
+                  Activate User
+                </>
+              )}
+            </button>
+          )}
+
+          {!row.is_register && !row.is_deleted && (
+            <button
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+               onClick={async () => {
+      try {
+       
+
+        const response = await resendInvitation(row.id);
+
+        toast.success(
+          response?.message || "Invitation resent successfully"
+        );
+      } catch (error: any) {
+        console.error(error);
+
+        toast.error(
+          error?.response?.data?.detail ||
+          error?.response?.data?.message ||
+          error?.message ||
+          "Failed to resend invitation"
+        );
+      }finally{
+         setOpen(false);
+      }
+    }}
+            >
+              <RotateCcw size={16} />
+              {isLoading?"loading...":'Resend Invite'}
+            </button>
+          )}
+
+          <button
+            className={`w-full flex items-center gap-2 px-4 py-2 text-sm ${
+              row.is_deleted
+                ? "hover:bg-green-50 text-green-600"
+                : "hover:bg-red-50 text-red-600"
+            }`}
+            onClick={() => {
+              setOpen(false);
+              setUserId(row.id);
+              setIsDelete(true);
+            }}
+          >
+            {row.is_deleted ? (
+              <>
+                <RotateCcw size={16} />
+                Restore User
+              </>
+            ) : (
+              <>
+                <Trash2 size={16} />
+                Delete User
+              </>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 function ManageUsers(){
 
 
@@ -363,42 +500,11 @@ function ManageUsers(){
       );
     },
   },
-  {
-    key: "actions",
-    label: "Actions",
-    render: (_: any, row: any) => (
-      <div className="flex items-center gap-2">
-        <Button
-          variant="longOutline"
-          text="Edit"
-          size="sm"
-          isLoading={disabling}
-          onClick={() => {
-            setIsOpen(true);
-            setUserId(row.id);
-          }}
-        />
-        <Button
-          variant="long"
-          text={row.is_active ? "Disable" : "Activate"}
-          size="sm"
-          onClick={() => {
-            setUserId(row.id);
-            setIsDisable(true);
-          }}
-        />
-        <Button
-          variant="danger"
-          text={row.is_deleted ? "Restore" : "Delete"}
-          size="sm"
-          onClick={() => {
-            setUserId(row.id);
-            setIsDelete(true);
-          }}
-        />
-      </div>
-    ),
-  },
+ {
+  key: "actions",
+  label: "",
+  render: (_: any, row: any) => <ActionDropdown userId={userId} setIsDelete={setIsDelete} setIsDisable={setIsDisable} setIsOpen={setIsOpen} setUserId={setUserId} row={row} />,
+}
 ];
     
 

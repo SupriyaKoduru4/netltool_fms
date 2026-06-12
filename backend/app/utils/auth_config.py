@@ -13,7 +13,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 INVITE_TOKEN_EXPIRE_HOURS = 24
 
-INVITATION_URL = f"{os.getenv("UI_BASE_URL")}/verify-email?token="
+INVITATION_URL = f"{os.getenv("UI_BASE_URL")}/register?invitation_token="
 
 PASSWORD_RESET_URL = f"{os.getenv("UI_BASE_URL")}/reset-password?reset-token="
 

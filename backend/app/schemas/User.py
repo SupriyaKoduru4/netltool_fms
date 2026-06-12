@@ -16,6 +16,9 @@ class UserRegister(BaseModel):
 
 class requestResetPassword(BaseModel):
     email:str
+
+class requestInvitation(BaseModel):
+    user_id:int
     
     
 
