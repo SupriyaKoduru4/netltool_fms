@@ -14,6 +14,18 @@ from app.constants.permissions import Permissions
 
 router = APIRouter()
 
+import socket
+
+@router.get("/smtp-test")
+def smtp_test():
+    try:
+        socket.create_connection(
+            ("smtp.gmail.com", 587),
+            timeout=10
+        )
+        return {"status": "connected"}
+    except Exception as e:
+        return {"error": str(e)}
 
 @router.post("/create-user-for-login")
 async def create(
