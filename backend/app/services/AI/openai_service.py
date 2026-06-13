@@ -40,6 +40,7 @@ enhanced_html:
 - Add callouts
 - Add key takeaways section
 - Return valid HTML only
+- it should occupy the full width of parent component and must be responsive as well
 
 summary:
 - 20-40 words

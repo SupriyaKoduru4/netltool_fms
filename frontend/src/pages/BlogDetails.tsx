@@ -340,7 +340,7 @@ const BlogDetails = () => {
               {/* Content — overflow-wrap + word-break prevent paragraph blowout */}
               <div
                 className="
-                  prose prose-sm max-w-none px-5 py-6 sm:px-7
+                  prose prose-sm max-w-full px-5 py-6 sm:px-7
                   [overflow-wrap:break-word] [word-break:break-word]
                   text-gray-700
                   prose-headings:font-semibold prose-headings:text-gray-900

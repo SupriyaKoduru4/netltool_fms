@@ -1,5 +1,4 @@
 import token
-
 from jose import jwt
 from fastapi import HTTPException, Header
 from datetime import timedelta , datetime
@@ -23,6 +22,8 @@ def verify_access_token(token:str):
     try:
         print("this is the token we are verifying in the verify access token function" , token)
         payload = jwt.decode(token , SECRET_KEY , algorithms=[ALGORITHM])
+        print("this sifashdfaf",datetime.utcfromtimestamp(payload["exp"]))
+        print(datetime.utcnow())
         user_id = payload.get("user_id")
         if user_id is None:
             raise HTTPException(status_code=401 , detail="User Not authenticated or Registered")
@@ -42,8 +43,10 @@ def verify_access_token_auth(authorization:str= Header(...)):
             )
 
         token = authorization.replace("Bearer ", "")
-        print("this is the token we are verifying in the verify access token function" , token)
+        # print("this is the token we are verifying in the verify access token function" , token)
         payload = jwt.decode(token , SECRET_KEY , algorithms=[ALGORITHM])
+        print("this sifashdfaf",datetime.utcfromtimestamp(payload["exp"]))
+        print(datetime.utcnow())
         user_id = payload.get("user_id")
         if user_id is None:
             raise HTTPException(status_code=401 , detail="User Not authenticated or Registered")
